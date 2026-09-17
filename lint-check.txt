@@ -1,0 +1,6 @@
+
+> tms-bi-enterprise@0.0.0 lint
+> oxlint
+
+Found 0 warnings and 0 errors.
+Finished in 35ms on 34 files with 104 rules using 16 threads.

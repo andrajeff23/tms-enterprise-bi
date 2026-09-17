@@ -1,0 +1,2 @@
+src/presentation/components/widgets/TopCustomersWidget.tsx(2,38): error TS2307: Cannot find module '../../shared/types/tms.types' or its corresponding type declarations.
+src/presentation/components/widgets/UnitRusakWidget.tsx(3,34): error TS2307: Cannot find module '../../shared/types/tms.types' or its corresponding type declarations.
