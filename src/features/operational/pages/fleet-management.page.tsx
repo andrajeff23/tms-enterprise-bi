@@ -1,8 +1,61 @@
 import React, { useState } from 'react';
-import { Plus, Truck, Wrench, AlertTriangle, Download, Search, Settings } from 'lucide-react';
+import { Plus, Truck, Wrench, AlertTriangle, Download, Search, Settings , ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const FleetManagementPage: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'FLEET' | 'MAINTENANCE' | 'RUSAK'>('FLEET');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const renderPagination = (dataLength: number) => {
+    const totalPages = Math.ceil(dataLength / itemsPerPage);
+    return (
+      <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="text-xs text-slate-500 font-medium">
+          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+        </div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-1 px-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
 
   const fleetData = [
     { plate: 'B 9123 KXA', type: 'Truck Fuso Wingbox', brand: 'Mitsubishi Fuso', year: 2022, cap: '18 Ton', status: 'Ready', odo: '124,500 km' },
@@ -50,32 +103,29 @@ export const FleetManagementPage: React.FC = () => {
       <div className="flex gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-xs">
         <button
           onClick={() => setActiveSubTab('FLEET')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeSubTab === 'FLEET' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
-          }`}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeSubTab === 'FLEET' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            }`}
         >
           <Truck size={14} /> Daftar Armada
         </button>
         <button
           onClick={() => setActiveSubTab('MAINTENANCE')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeSubTab === 'MAINTENANCE' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
-          }`}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeSubTab === 'MAINTENANCE' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            }`}
         >
           <Wrench size={14} /> Work Order Servis
         </button>
         <button
           onClick={() => setActiveSubTab('RUSAK')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeSubTab === 'RUSAK' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
-          }`}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeSubTab === 'RUSAK' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            }`}
         >
           <AlertTriangle size={14} /> Unit Rusak
         </button>
       </div>
 
       {/* KPI Widgets */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/*<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Total Armada', val: fleetData.length, color: 'text-slate-800' },
           { label: 'Siap / Beroperasi', val: fleetData.filter(v => v.status === 'Ready' || v.status === 'Beroperasi').length, color: 'text-emerald-600' },
@@ -87,7 +137,7 @@ export const FleetManagementPage: React.FC = () => {
             <div className={`text-3xl font-extrabold mt-1 ${k.color}`}>{k.val}</div>
           </div>
         ))}
-      </div>
+      </div>*/}
 
       {activeSubTab === 'FLEET' && (
         <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
@@ -115,7 +165,7 @@ export const FleetManagementPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {fleetData.map(v => (
+                {fleetData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(v => (
                   <tr key={v.plate} className="hover:bg-slate-50">
                     <td className="p-3.5 font-bold text-slate-900">{v.plate}</td>
                     <td className="p-3.5">
@@ -126,11 +176,10 @@ export const FleetManagementPage: React.FC = () => {
                     <td className="p-3.5 font-bold text-blue-600">{v.cap}</td>
                     <td className="p-3.5">{v.odo}</td>
                     <td className="p-3.5">
-                      <span className={`font-bold px-2.5 py-1 rounded-full text-[11px] ${
-                        v.status === 'Ready' || v.status === 'Beroperasi' ? 'bg-emerald-100 text-emerald-700' :
-                        v.status === 'Maintenance' ? 'bg-amber-100 text-amber-700' :
-                        v.status === 'Rusak' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'
-                      }`}>
+                      <span className={`font-bold px-2.5 py-1 rounded-full text-[11px] ${v.status === 'Ready' || v.status === 'Beroperasi' ? 'bg-emerald-100 text-emerald-700' :
+                          v.status === 'Maintenance' ? 'bg-amber-100 text-amber-700' :
+                            v.status === 'Rusak' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'
+                        }`}>
                         {v.status}
                       </span>
                     </td>
@@ -139,6 +188,7 @@ export const FleetManagementPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(fleetData.length)}
         </div>
       )}
 
@@ -169,7 +219,7 @@ export const FleetManagementPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {maintenanceData.map(m => (
+                {maintenanceData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(m => (
                   <tr key={m.id} className="hover:bg-slate-50">
                     <td className="p-3.5 font-bold text-blue-600">{m.id}</td>
                     <td className="p-3.5 font-bold text-slate-900">{m.plate}</td>
@@ -187,6 +237,7 @@ export const FleetManagementPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(maintenanceData.length)}
         </div>
       )}
 
@@ -216,16 +267,15 @@ export const FleetManagementPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {damagedUnits.map(d => (
+                {damagedUnits.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
                   <tr key={d.plate} className="hover:bg-slate-50">
                     <td className="p-3.5 font-bold text-rose-600">{d.plate}</td>
                     <td className="p-3.5 font-medium">{d.type}</td>
                     <td className="p-3.5 font-bold text-slate-900">{d.problem}</td>
                     <td className="p-3.5">{d.date}</td>
                     <td className="p-3.5">
-                      <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${
-                        d.severity === 'HIGH' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${d.severity === 'HIGH' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+                        }`}>
                         {d.severity} SEVERITY
                       </span>
                     </td>
@@ -235,6 +285,7 @@ export const FleetManagementPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(damagedUnits.length)}
         </div>
       )}
     </div>

@@ -72,13 +72,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
 
   const navSections = [
     {
-      title: "OPERASIONAL",
+      title: "DASHBOARD",
       items: [
         {
           id: "dashboard",
           label: "Dashboard",
           icon: <LayoutDashboard size={18} />,
         },
+      ],
+    },
+    {
+      title: "MASTER DATA",
+      items: [
+        { id: "master-data", label: "Master Data", icon: <Database size={18} /> },
+        // { id: "driver", label: "Driver", icon: <UserCheck size={18} /> },
+        // { id: "vehicle", label: "Vehicle / Unit", icon: <Truck size={18} /> },
+        // { id: "tarif", label: "Tarif", icon: <Tag size={18} /> },
+      ],
+    },
+    {
+      title: "OPERASIONAL",
+      items: [
         {
           id: "order-management",
           label: "Order Management",
@@ -99,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
           label: "Tracking & Monitoring",
           icon: <MapPin size={18} />,
         },
-        { id: "uang-jalan", label: "Uang Jalan", icon: <Wallet size={18} /> },
+        // { id: "uang-jalan", label: "Uang Jalan", icon: <Wallet size={18} /> },
         {
           id: "pod",
           label: "Proof of Delivery",
@@ -132,19 +146,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
       ],
     },
     {
-      title: "MASTER DATA",
-      items: [
-        { id: "master-data", label: "Master Data", icon: <Database size={18} /> },
-        // { id: "driver", label: "Driver", icon: <UserCheck size={18} /> },
-        // { id: "vehicle", label: "Vehicle / Unit", icon: <Truck size={18} /> },
-        // { id: "tarif", label: "Tarif", icon: <Tag size={18} /> },
-      ],
-    },
-    {
       title: "REPORTS & ANALYTICS",
       items: [
         { id: "reports", label: "Reports", icon: <BarChart3 size={18} /> },
-        { id: "analytics", label: "Analytics", icon: <Sparkles size={18} /> },
+        // { id: "analytics", label: "Analytics", icon: <Sparkles size={18} /> },
       ],
     },
     {

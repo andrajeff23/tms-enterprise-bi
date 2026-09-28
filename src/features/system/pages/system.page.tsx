@@ -3,7 +3,7 @@ import {
   Settings, ShieldCheck, Plus, Search, Edit2, Trash2,
   Eye, Lock, CheckCircle, XCircle, Clock, User, Key,
   AlertTriangle, Activity, Database, Server, Globe
-} from 'lucide-react';
+, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type UserRole = 'SUPER_ADMIN' | 'LOGISTICS_MANAGER' | 'DISPATCHER' | 'FINANCE_MANAGER' | 'DRIVER_SUPERVISOR' | 'MECHANIC' | 'VIEWER';
 type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
@@ -74,6 +74,59 @@ const roleLabels: Record<UserRole, string> = {
 
 export const SystemPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'system'>('users');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const renderPagination = (dataLength: number) => {
+    const totalPages = Math.ceil(dataLength / itemsPerPage);
+    return (
+      <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="text-xs text-slate-500 font-medium">
+          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+        </div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-1 px-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
 
@@ -110,7 +163,7 @@ export const SystemPage: React.FC = () => {
       </div>
 
       {/* KPI */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/*<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Total Pengguna', val: systemUsers.length, color: 'text-slate-800', sub: 'Terdaftar' },
           { label: 'User Aktif', val: systemUsers.filter(u => u.status === 'ACTIVE').length, color: 'text-emerald-600', sub: 'Online hari ini' },
@@ -123,7 +176,7 @@ export const SystemPage: React.FC = () => {
             <div className="text-[10px] text-slate-400 mt-1">{k.sub}</div>
           </div>
         ))}
-      </div>
+      </div>*/}
 
       {/* Tabs */}
       <div className="flex gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-xs">
@@ -134,10 +187,9 @@ export const SystemPage: React.FC = () => {
         ].map(t => (
           <button
             key={t.id}
-            onClick={() => setActiveTab(t.id as typeof activeTab)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === t.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
-            }`}
+            onClick={() => { setActiveTab(t.id as typeof activeTab); setCurrentPage(1); }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === t.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              }`}
           >
             {t.icon} {t.label}
           </button>
@@ -148,9 +200,9 @@ export const SystemPage: React.FC = () => {
       {activeTab === 'users' && (
         <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
           <div className="p-4 border-b border-slate-200 flex items-center gap-3">
-            <div className="relative flex-1 max-w-xs">
+            <div className="relative flex-1 min-w-[200px]">
               <Search size={14} className="text-slate-400 absolute left-3 top-2.5" />
-              <input type="text" placeholder="Cari nama, email, divisi..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-8 pr-3 py-2 focus:outline-none" />
+              <input type="text" placeholder="Cari nama, email, divisi..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
             </div>
             <span className="text-xs text-slate-500 ml-auto">{filtered.length} pengguna</span>
           </div>
@@ -168,7 +220,7 @@ export const SystemPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filtered.map(u => (
+                {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(u => (
                   <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5">
                       <div className="flex items-center gap-2.5">
@@ -204,6 +256,7 @@ export const SystemPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(filtered.length)}
         </div>
       )}
 
@@ -235,7 +288,7 @@ export const SystemPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {auditLogs.map(log => (
+                {auditLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(log => (
                   <tr key={log.id} className={`hover:bg-slate-50/80 transition-colors ${log.status === 'FAILED' ? 'bg-rose-50/30' : ''}`}>
                     <td className="p-3.5 font-mono text-[11px] text-slate-500">{log.id}</td>
                     <td className="p-3.5 font-mono text-slate-600">{log.user}</td>
@@ -255,6 +308,7 @@ export const SystemPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(auditLogs.length)}
         </div>
       )}
 
@@ -267,7 +321,7 @@ export const SystemPage: React.FC = () => {
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.status === 'ONLINE' ? 'bg-emerald-50' : 'bg-amber-50'}`}>
                   {s.name.includes('GPS') ? <Globe size={18} className={s.status === 'ONLINE' ? 'text-emerald-600' : 'text-amber-600'} />
                     : s.name.includes('Database') ? <Database size={18} className={s.status === 'ONLINE' ? 'text-emerald-600' : 'text-amber-600'} />
-                    : <Server size={18} className={s.status === 'ONLINE' ? 'text-emerald-600' : 'text-amber-600'} />}
+                      : <Server size={18} className={s.status === 'ONLINE' ? 'text-emerald-600' : 'text-amber-600'} />}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">

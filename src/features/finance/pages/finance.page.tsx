@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   FileText, Download, Plus, Search, CheckCircle, Clock,
   AlertCircle, Eye, Send, Printer, TrendingUp, TrendingDown
-} from 'lucide-react';
+, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type InvoiceStatus = 'PAID' | 'UNPAID' | 'OVERDUE' | 'DRAFT' | 'PARTIAL';
 
@@ -40,6 +40,59 @@ const fmtJt = (n: number) => `Rp ${(n / 1000000).toFixed(0)} Jt`;
 
 export const FinancePage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('ALL');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const renderPagination = (dataLength: number) => {
+    const totalPages = Math.ceil(dataLength / itemsPerPage);
+    return (
+      <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="text-xs text-slate-500 font-medium">
+          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+        </div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-1 px-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
 
@@ -90,7 +143,7 @@ export const FinancePage: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
           <div className="text-[11px] font-bold text-slate-500 uppercase flex items-center gap-1"><TrendingUp size={11} /> Total Billed</div>
           <div className="text-2xl font-extrabold text-slate-900 mt-1">{fmtJt(totalRevenue)}</div>
@@ -111,7 +164,7 @@ export const FinancePage: React.FC = () => {
           <div className="text-2xl font-extrabold text-rose-600 mt-1">{fmtJt(totalOverdue)}</div>
           <div className="text-[10px] text-rose-400 mt-1">{invoices.filter(i => i.status === 'OVERDUE').length} invoice melewati jatuh tempo</div>
         </div>
-      </div>
+      </div> */}
 
       {/* Filter Row */}
       <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -152,7 +205,7 @@ export const FinancePage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map(inv => (
+              {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(inv => (
                 <tr key={inv.id} className={`hover:bg-slate-50/80 transition-colors ${inv.status === 'OVERDUE' ? 'bg-rose-50/20' : ''}`}>
                   <td className="p-3.5">
                     <div className="font-bold text-emerald-600">{inv.id}</div>
@@ -200,6 +253,7 @@ export const FinancePage: React.FC = () => {
             </tbody>
           </table>
         </div>
+        {renderPagination(filtered.length)}
       </div>
 
       {/* Create Invoice Modal */}

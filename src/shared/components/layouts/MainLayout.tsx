@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import type { RootState } from '../../lib/store';
 import { useNavigationStore } from '../../lib/store/useNavigationStore';
@@ -194,7 +195,20 @@ export const MainLayout: React.FC = () => {
           subtitle={pageInfo.subtitle}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto relative">{renderContent()}</main>
+        <main className="flex-1 overflow-y-auto relative overflow-x-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="min-h-full"
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
+        </main>
         <div className="shrink-0 z-30 relative">
           <Footer />
         </div>

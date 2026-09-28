@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Building2, Search, Download, CheckCircle, Clock, XCircle,
   Plus, Eye, Phone, AlertCircle, Calendar
-} from 'lucide-react';
+, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type CollectionStatus = 'CURRENT' | 'FOLLOW_UP' | 'OVERDUE' | 'PROMISE_TO_PAY' | 'DISPUTE' | 'WRITTEN_OFF';
 
@@ -38,6 +38,59 @@ const dummyCollections: CollectionRecord[] = [
 
 export const PenagihanPage: React.FC = () => {
   const [search, setSearch] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const renderPagination = (dataLength: number) => {
+    const totalPages = Math.ceil(dataLength / itemsPerPage);
+    return (
+      <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="text-xs text-slate-500 font-medium">
+          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+        </div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-1 px-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
 
@@ -91,7 +144,7 @@ export const PenagihanPage: React.FC = () => {
       </div>
 
       {/* KPI */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
           <div className="text-[11px] font-bold text-slate-500 uppercase">Total Outstanding</div>
           <div className="text-xl font-extrabold text-rose-600 mt-1">{fmt(totalOutstanding)}</div>
@@ -112,7 +165,7 @@ export const PenagihanPage: React.FC = () => {
           <div className="text-xl font-extrabold text-slate-800 mt-1">2</div>
           <div className="text-[10px] text-slate-400 mt-1">Ahmad Fauzi & Sari Dewi</div>
         </div>
-      </div>
+      </div>*/}
 
       {/* Filter */}
       <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -153,7 +206,7 @@ export const PenagihanPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map(c => (
+              {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(c => (
                 <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="p-3.5 font-bold text-blue-600">{c.invoiceRef}</td>
                   <td className="p-3.5">
@@ -205,6 +258,7 @@ export const PenagihanPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+        {renderPagination(filtered.length)}
       </div>
 
       {/* Add Modal */}

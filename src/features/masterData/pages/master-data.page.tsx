@@ -4,7 +4,7 @@ import {
   Search, Download, Eye, Tag, TrendingUp, CreditCard,
   Truck as TruckIcon, Gauge, Shield, Calendar, FileText, CheckCircle, AlertCircle,
   Database
-} from 'lucide-react';
+, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type MasterTab = 'CUSTOMER' | 'DRIVER' | 'VEHICLE' | 'TARIF';
 
@@ -84,6 +84,59 @@ const fmtRpFull = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
 export const MasterDataPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MasterTab>('CUSTOMER');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const renderPagination = (dataLength: number) => {
+    const totalPages = Math.ceil(dataLength / itemsPerPage);
+    return (
+      <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="text-xs text-slate-500 font-medium">
+          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+        </div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-1 px-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) {
+                pageNum = currentPage - 2 + i;
+                if (pageNum > totalPages) pageNum = totalPages - (4 - i);
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -195,7 +248,7 @@ export const MasterDataPage: React.FC = () => {
         {tabs.map(t => (
           <button
             key={t.id}
-            onClick={() => { setActiveTab(t.id); setSearch(''); }}
+            onClick={() => { setActiveTab(t.id); setSearch(''); setCurrentPage(1); }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === t.id ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
               }`}
           >
@@ -206,7 +259,7 @@ export const MasterDataPage: React.FC = () => {
       </div>
 
       {/* KPI Row */}
-      {activeTab === 'CUSTOMER' && (
+      {/*activeTab === 'CUSTOMER' && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: 'Total Customer', val: customers.length, color: 'text-slate-800' },
@@ -252,7 +305,7 @@ export const MasterDataPage: React.FC = () => {
             </div>
           ))}
         </div>
-      )}
+      )*/}
 
       {/* Search Filter */}
       <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs flex flex-wrap gap-3">
@@ -301,7 +354,7 @@ export const MasterDataPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredCustomers.map(c => (
+                {filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(c => (
                   <tr key={c.code} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5">
                       <div className="font-bold text-blue-600">{c.code}</div>
@@ -333,6 +386,7 @@ export const MasterDataPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(filteredCustomers.length)}
         </div>
       )}
 
@@ -359,7 +413,7 @@ export const MasterDataPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredDrivers.map(d => (
+                {filteredDrivers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
                   <tr key={d.code} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5">
                       <div className="font-bold text-indigo-600">{d.code}</div>
@@ -394,6 +448,7 @@ export const MasterDataPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(filteredDrivers.length)}
         </div>
       )}
 
@@ -421,7 +476,7 @@ export const MasterDataPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredVehicles.map(v => (
+                {filteredVehicles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(v => (
                   <tr key={v.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5">
                       <div className="font-bold text-slate-900">{v.plateNumber}</div>
@@ -455,6 +510,7 @@ export const MasterDataPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(filteredVehicles.length)}
         </div>
       )}
 
@@ -481,7 +537,7 @@ export const MasterDataPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredTariffs.map(t => (
+                {filteredTariffs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(t => (
                   <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3.5 font-bold text-teal-600 font-mono">{t.id}</td>
                     <td className="p-3.5">
@@ -509,6 +565,7 @@ export const MasterDataPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+        {renderPagination(filteredTariffs.length)}
         </div>
       )}
 

@@ -11,12 +11,12 @@ import 'leaflet/dist/leaflet.css';
 
 const fleetList: (FleetUnit & { driverName: string; routeFrom: string; routeTo: string; eta: string; tempEngine: number; loadPercent: number })[] = [
   {
-    id: 'U-01', plateNumber: 'B 9123 KXA', vehicleType: 'Truck Wingbox 18T',
+    id: 'U-01', plateNumber: 'BK 9123 KXA', vehicleType: 'Truck Wingbox 18T',
     brandModel: 'Mitsubishi Fuso FN', year: 2022, capacityTon: 18,
     status: 'OPERATIONAL', fuelLevelPercent: 82, speedKmh: 64,
-    currentLocation: { lat: -6.333215026507522, lng: 107.17739344210707, address: 'Tol Jakarta-Cikampek KM 34' },
+    currentLocation: { lat: 3.646863, lng: 98.548981, address: 'Tol Medan-Binjai KM 34' },
     lastServiceDate: '2026-07-01', driverName: 'Slamet Rahardjo',
-    routeFrom: 'Jakarta', routeTo: 'Surabaya', eta: '2026-09-04 08:00', tempEngine: 88, loadPercent: 87,
+    routeFrom: 'Medan', routeTo: 'Binjai', eta: '2026-09-04 08:00', tempEngine: 88, loadPercent: 87,
   },
   {
     id: 'U-02', plateNumber: 'B 9876 KXB', vehicleType: 'Trailer 40ft',
