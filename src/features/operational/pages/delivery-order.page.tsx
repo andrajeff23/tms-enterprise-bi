@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   Truck, Plus, Search, Download, CheckCircle, Clock, AlertCircle,
@@ -135,7 +136,7 @@ export const DeliveryOrderPage: React.FC = () => {
     };
     setOrders([next, ...orders]);
     setShowModal(false);
-    alert(`✅ DO ${next.doNumber} berhasil dibuat!`);
+    Swal.fire({icon: 'success', title: 'Informasi', text: `✅ DO ${next.doNumber} berhasil dibuat!`});
   };
 
   return (
@@ -152,7 +153,7 @@ export const DeliveryOrderPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export DO ke Excel')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export DO ke Excel'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
           {/*<button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -230,10 +231,10 @@ export const DeliveryOrderPage: React.FC = () => {
                   <td className="p-3.5">{statusBadge(o.status)}</td>
                   <td className="p-3.5 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button onClick={() => alert(`Detail DO: ${o.doNumber}`)} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-[11px]">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Detail DO: ${o.doNumber}`})} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-[11px]">
                         <Eye size={12} /> Detail
                       </button>
-                      <button onClick={() => alert(`Cetak DO: ${o.doNumber}`)} className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-800 font-semibold text-[11px]">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Cetak DO: ${o.doNumber}`})} className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-800 font-semibold text-[11px]">
                         <Printer size={12} /> Cetak
                       </button>
                     </div>

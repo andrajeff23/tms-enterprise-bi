@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   CalendarCheck, Plus, Search, Filter, Download, CheckCircle,
@@ -172,7 +173,7 @@ export const PlannerPage: React.FC = () => {
     };
     setAssignments([next, ...assignments]);
     setShowModal(false);
-    alert(`✅ Penugasan ${next.tripNo} berhasil dibuat!`);
+    Swal.fire({icon: 'success', title: 'Informasi', text: `✅ Penugasan ${next.tripNo} berhasil dibuat!`});
   };
 
   return (
@@ -190,7 +191,7 @@ export const PlannerPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => alert('Export jadwal ke Excel')}
+            onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export jadwal ke Excel'})}
             className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors"
           >
             <Download size={14} />
@@ -354,7 +355,7 @@ export const PlannerPage: React.FC = () => {
                   <td className="p-3.5">{statusBadge(a.status)}</td>
                   <td className="p-3.5 text-center">
                     <button
-                      onClick={() => alert(`Detail penugasan ${a.tripNo}`)}
+                      onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Detail penugasan ${a.tripNo}`})}
                       className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-[11px]"
                     >
                       <Eye size={12} /> Detail

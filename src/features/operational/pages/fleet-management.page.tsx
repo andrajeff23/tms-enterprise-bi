@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import { Plus, Truck, Wrench, AlertTriangle, Download, Search, Settings , ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -93,7 +94,7 @@ export const FleetManagementPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export data')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export data'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
         </div>
@@ -144,7 +145,7 @@ export const FleetManagementPage: React.FC = () => {
           <div className="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm">Spesifikasi & Status Kendaraan</h3>
             <button
-              onClick={() => alert('Registrasi unit baru')}
+              onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Registrasi unit baru'})}
               className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
             >
               <Plus size={14} />
@@ -197,7 +198,7 @@ export const FleetManagementPage: React.FC = () => {
           <div className="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm">Riwayat Work Order & Pemeliharaan</h3>
             <button
-              onClick={() => alert('Buat Work Order Pemeliharaan')}
+              onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Buat Work Order Pemeliharaan'})}
               className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
             >
               <Plus size={14} />
@@ -246,7 +247,7 @@ export const FleetManagementPage: React.FC = () => {
           <div className="p-4 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm">Daftar Unit Rusak & Penanganan Emergency</h3>
             <button
-              onClick={() => alert('Lapor Unit Rusak')}
+              onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Lapor Unit Rusak'})}
               className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition-all"
             >
               <AlertTriangle size={14} />

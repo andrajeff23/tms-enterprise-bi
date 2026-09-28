@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   FileText, Download, Plus, Search, CheckCircle, Clock,
@@ -133,7 +134,7 @@ export const FinancePage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export semua invoice')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export semua invoice'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> Export
           </button>
           <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -235,14 +236,14 @@ export const FinancePage: React.FC = () => {
                   <td className="p-3.5">{statusBadge(inv.status)}</td>
                   <td className="p-3.5">
                     <div className="flex items-center justify-center gap-1.5">
-                      <button onClick={() => alert(`Preview Invoice: ${inv.id}`)} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors" title="Lihat">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Preview Invoice: ${inv.id}`})} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors" title="Lihat">
                         <Eye size={13} />
                       </button>
-                      <button onClick={() => alert(`Print Invoice: ${inv.id}`)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Print">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Print Invoice: ${inv.id}`})} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Print">
                         <Printer size={13} />
                       </button>
                       {inv.status !== 'PAID' && (
-                        <button onClick={() => alert(`Kirim Email Invoice: ${inv.id} → ${inv.customer}`)} className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Kirim Email">
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Kirim Email Invoice: ${inv.id} → ${inv.customer}`})} className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Kirim Email">
                           <Send size={13} />
                         </button>
                       )}
@@ -299,7 +300,7 @@ export const FinancePage: React.FC = () => {
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Batal</button>
-                <button onClick={() => { setShowModal(false); alert('Invoice INV-2026-011 berhasil dibuat dalam status Draft!'); }} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs">Buat Invoice</button>
+                <button onClick={() => { setShowModal(false); Swal.fire({icon: 'success', title: 'Informasi', text: 'Invoice INV-2026-011 berhasil dibuat dalam status Draft!'}); }} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs">Buat Invoice</button>
               </div>
             </div>
           </div>

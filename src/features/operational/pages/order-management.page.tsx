@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import { Plus, Search, Filter, Download, CheckCircle, Clock, AlertCircle, XCircle, Package , ChevronLeft, ChevronRight } from 'lucide-react';
 import type { TransportOrder } from '../../../shared/types/tms.types';
@@ -94,7 +95,7 @@ export const OrderManagementPage: React.FC = () => {
 
     setOrders([created, ...orders]);
     setShowCreateModal(false);
-    alert(`Order Baru ${created.orderNumber} Berhasil Dibuat!`);
+    Swal.fire({icon: 'success', title: 'Informasi', text: `Order Baru ${created.orderNumber} Berhasil Dibuat!`});
   };
 
   const filteredOrders = orders.filter(order => {
@@ -150,7 +151,7 @@ export const OrderManagementPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => alert('Daftar Order berhasil diexport ke Excel.')}
+            onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Daftar Order berhasil diexport ke Excel.'})}
             className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors"
           >
             <Download size={14} /> <span>Export</span>
@@ -245,7 +246,7 @@ export const OrderManagementPage: React.FC = () => {
                   </td>
                   <td className="p-3.5 text-center">
                     <button
-                      onClick={() => alert(`Melihat detail Order ${ord.orderNumber}`)}
+                      onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Melihat detail Order ${ord.orderNumber}`})}
                       className="text-blue-600 hover:text-blue-800 font-semibold text-[11px] hover:underline"
                     >
                       Detail

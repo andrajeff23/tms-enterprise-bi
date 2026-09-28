@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   Wallet, Plus, Search, Download, CheckCircle, Clock,
@@ -150,7 +151,7 @@ export const UangJalanPage: React.FC = () => {
     };
     setRecords([next, ...records]);
     setShowModal(false);
-    alert(`✅ Uang Jalan ${next.refNo} berhasil dicairkan kepada ${next.driverName}`);
+    Swal.fire({icon: 'success', title: 'Informasi', text: `✅ Uang Jalan ${next.refNo} berhasil dicairkan kepada ${next.driverName}`});
   };
 
   return (
@@ -167,7 +168,7 @@ export const UangJalanPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export laporan uang jalan')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export laporan uang jalan'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
           <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -261,7 +262,7 @@ export const UangJalanPage: React.FC = () => {
                   </td>
                   <td className="p-3.5">{statusBadge(r.status)}</td>
                   <td className="p-3.5 text-center">
-                    <button onClick={() => alert(`Detail Uang Jalan: ${r.refNo}`)} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-[11px]">
+                    <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Detail Uang Jalan: ${r.refNo}`})} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-[11px]">
                       <Eye size={12} /> Detail
                     </button>
                   </td>

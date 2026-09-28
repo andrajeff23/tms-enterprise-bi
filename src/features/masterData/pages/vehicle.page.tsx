@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   Truck as TruckIcon, Plus, Search, Download, Eye,
@@ -151,7 +152,7 @@ export const VehiclePage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export data kendaraan')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export data kendaraan'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
           <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -327,7 +328,24 @@ export const VehiclePage: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-end gap-2 mt-4">
-              <button onClick={() => alert(`Edit data kendaraan: ${selectedVehicle.plateNumber}`)} className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 text-xs">Edit Data</button>
+              <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Edit data kendaraan: ${selectedVehicle.plateNumber}`})} className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 text-xs">Edit Data</button>
+              <button onClick={() => {
+                Swal.fire({
+                  title: 'Hapus Kendaraan?',
+                  text: `Apakah Anda yakin ingin menghapus data kendaraan ${selectedVehicle.plateNumber}?`,
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#3085d6',
+                  confirmButtonText: 'Ya, Hapus!',
+                  cancelButtonText: 'Batal'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    Swal.fire('Terhapus!', 'Data kendaraan telah dihapus.', 'success');
+                    setSelectedVehicle(null);
+                  }
+                });
+              }} className="px-4 py-2 bg-rose-600 text-white font-semibold rounded-lg hover:bg-rose-700 text-xs">Hapus Data</button>
               <button onClick={() => setSelectedVehicle(null)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Tutup</button>
             </div>
           </div>
@@ -374,7 +392,7 @@ export const VehiclePage: React.FC = () => {
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button onClick={() => setShowAddModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs">Batal</button>
-                <button onClick={() => { setShowAddModal(false); alert('Unit armada berhasil ditambahkan!'); }} className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg text-xs">Simpan</button>
+                <button onClick={() => { setShowAddModal(false); Swal.fire({icon: 'success', title: 'Informasi', text: 'Unit armada berhasil ditambahkan!'}); }} className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg text-xs">Simpan</button>
               </div>
             </div>
           </div>

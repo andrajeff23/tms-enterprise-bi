@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState, useEffect } from 'react';
 import {
   MapPin, Navigation, Gauge, BatteryCharging, AlertTriangle,
@@ -184,7 +185,7 @@ export const TrackingPage: React.FC = () => {
                 <span className="font-bold text-slate-800 text-xs w-28 shrink-0">{a.plate}</span>
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${a.severity === 'HIGH' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>{a.type}</span>
                 <span className="text-[11px] text-slate-600">{a.msg}</span>
-                <button onClick={() => alert(`Konfirmasi alert: ${a.plate} - ${a.msg}`)} className="ml-auto text-[11px] font-semibold text-blue-600 hover:text-blue-800 shrink-0">Acknowledge</button>
+                <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Konfirmasi alert: ${a.plate} - ${a.msg}`})} className="ml-auto text-[11px] font-semibold text-blue-600 hover:text-blue-800 shrink-0">Acknowledge</button>
               </div>
             ))}
           </div>

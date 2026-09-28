@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState, useMemo } from 'react';
 import {
   Download, FileText, BarChart3, Truck, Wrench, Users,
@@ -111,14 +112,14 @@ export const ReportsPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => alert('Exporting PDF...')}
+            onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Exporting PDF...'})}
             className="flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all"
           >
             <FileDown size={15} />
             <span>Export PDF</span>
           </button>
           <button
-            onClick={() => alert('Exporting Excel...')}
+            onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Exporting Excel...'})}
             className="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all"
           >
             <FileSpreadsheet size={15} />
@@ -230,7 +231,7 @@ export const ReportsPage: React.FC = () => {
                     <td className="py-3 px-4 text-right space-x-2">
                       <button
                         disabled={r.status !== 'READY'}
-                        onClick={() => alert(`Downloading PDF for ${r.id}`)}
+                        onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Downloading PDF for ${r.id}`})}
                         className={`inline-flex items-center justify-center p-1.5 rounded-lg border transition-colors ${r.status === 'READY' ? 'border-slate-200 text-slate-600 hover:bg-slate-100' : 'border-transparent text-slate-300'}`}
                         title="Download PDF"
                       >
@@ -238,7 +239,7 @@ export const ReportsPage: React.FC = () => {
                       </button>
                       <button
                         disabled={r.status !== 'READY'}
-                        onClick={() => alert(`Downloading Excel for ${r.id}`)}
+                        onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Downloading Excel for ${r.id}`})}
                         className={`inline-flex items-center justify-center p-1.5 rounded-lg border transition-colors ${r.status === 'READY' ? 'border-slate-200 text-emerald-600 hover:bg-emerald-50' : 'border-transparent text-slate-300'}`}
                         title="Download Excel"
                       >

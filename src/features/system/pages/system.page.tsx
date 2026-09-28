@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   Settings, ShieldCheck, Plus, Search, Edit2, Trash2,
@@ -242,10 +243,10 @@ export const SystemPage: React.FC = () => {
                     <td className="p-3.5">{statusBadge(u.status)}</td>
                     <td className="p-3.5">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => alert(`Edit user: ${u.name}`)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={13} /></button>
-                        <button onClick={() => alert(`Reset password: ${u.email}`)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"><Key size={13} /></button>
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Edit user: ${u.name}`})} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={13} /></button>
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Reset password: ${u.email}`})} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"><Key size={13} /></button>
                         {u.role !== 'SUPER_ADMIN' && (
-                          <button onClick={() => alert(`Toggle status user: ${u.name}`)} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors">
+                          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Toggle status user: ${u.name}`})} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors">
                             {u.status === 'ACTIVE' ? <Lock size={13} /> : <CheckCircle size={13} />}
                           </button>
                         )}
@@ -271,7 +272,7 @@ export const SystemPage: React.FC = () => {
               <span className="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <AlertTriangle size={9} /> {auditLogs.filter(l => l.status === 'FAILED').length} Failed Login
               </span>
-              <button onClick={() => alert('Export audit log')} className="text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded-lg">Export</button>
+              <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export audit log'})} className="text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded-lg">Export</button>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -408,7 +409,7 @@ export const SystemPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Batal</button>
-                <button onClick={() => { setShowModal(false); alert('Pengguna baru berhasil ditambahkan! Email aktivasi telah dikirim.'); }} className="px-4 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 text-xs">Buat Pengguna</button>
+                <button onClick={() => { setShowModal(false); Swal.fire({icon: 'success', title: 'Informasi', text: 'Pengguna baru berhasil ditambahkan! Email aktivasi telah dikirim.'}); }} className="px-4 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 text-xs">Buat Pengguna</button>
               </div>
             </div>
           </div>

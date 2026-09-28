@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   Sparkles, BrainCircuit, AlertTriangle, Zap, TrendingUp,
@@ -216,10 +217,10 @@ export const AnalyticsPage: React.FC = () => {
                     </div>
                     {ins.status === 'ACTIVE' && (
                       <div className="flex gap-2">
-                        <button onClick={() => alert(`Menerapkan: ${ins.title}`)} className="flex items-center gap-1 bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Menerapkan: ${ins.title}`})} className="flex items-center gap-1 bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-colors">
                           <Zap size={11} /> Terapkan
                         </button>
-                        <button onClick={() => alert('Rekomendasi diabaikan')} className="text-[11px] font-semibold text-slate-400 hover:text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Rekomendasi diabaikan'})} className="text-[11px] font-semibold text-slate-400 hover:text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                           Abaikan
                         </button>
                       </div>
@@ -285,7 +286,7 @@ export const AnalyticsPage: React.FC = () => {
                       />
                     </div>
                     {p.riskPercent >= 60 && (
-                      <button onClick={() => alert(`Membuat WO untuk ${p.vehiclePlate} - ${p.component}`)} className="text-[10px] font-bold text-white bg-slate-800 px-2 py-1 rounded hover:bg-slate-700 transition-colors">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Membuat WO untuk ${p.vehiclePlate} - ${p.component}`})} className="text-[10px] font-bold text-white bg-slate-800 px-2 py-1 rounded hover:bg-slate-700 transition-colors">
                         Buat WO
                       </button>
                     )}
@@ -387,7 +388,7 @@ export const AnalyticsPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-3.5 text-center">
-                      <button onClick={() => alert(`AI Rute ${r.route}: Optimalkan jadwal keberangkatan dan penggunaan armada`)} className="inline-flex items-center gap-1 text-violet-600 hover:text-violet-800 font-semibold text-[11px]">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `AI Rute ${r.route}: Optimalkan jadwal keberangkatan dan penggunaan armada`})} className="inline-flex items-center gap-1 text-violet-600 hover:text-violet-800 font-semibold text-[11px]">
                         <Eye size={11} /> Lihat AI Tips
                       </button>
                     </td>

@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   CreditCard, Search, Download, CheckCircle, Clock, XCircle,
@@ -150,7 +151,7 @@ export const PaymentPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export rekap pembayaran')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export rekap pembayaran'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
           <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -243,11 +244,11 @@ export const PaymentPage: React.FC = () => {
                   <td className="p-3.5 text-center">
                     <div className="flex items-center justify-center gap-2">
                       {p.status === 'PROCESSING' && (
-                        <button onClick={() => alert(`Pembayaran ${p.paymentNo} berhasil diverifikasi!`)} className="text-emerald-600 hover:text-emerald-800 font-semibold text-[11px] flex items-center gap-0.5">
+                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Pembayaran ${p.paymentNo} berhasil diverifikasi!`})} className="text-emerald-600 hover:text-emerald-800 font-semibold text-[11px] flex items-center gap-0.5">
                           <CheckCircle size={11} /> Verifikasi
                         </button>
                       )}
-                      <button onClick={() => alert(`Detail: ${p.paymentNo}\nCatatan: ${p.note}`)} className="text-violet-600 hover:text-violet-800 font-semibold text-[11px] flex items-center gap-0.5">
+                      <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Detail: ${p.paymentNo}\nCatatan: ${p.note}`})} className="text-violet-600 hover:text-violet-800 font-semibold text-[11px] flex items-center gap-0.5">
                         <Eye size={11} /> Detail
                       </button>
                     </div>
@@ -308,7 +309,7 @@ export const PaymentPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Batal</button>
-                <button onClick={() => { setShowModal(false); alert('Pembayaran berhasil diinput!'); }} className="px-4 py-2 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 text-xs">Simpan Pembayaran</button>
+                <button onClick={() => { setShowModal(false); Swal.fire({icon: 'success', title: 'Informasi', text: 'Pembayaran berhasil diinput!'}); }} className="px-4 py-2 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 text-xs">Simpan Pembayaran</button>
               </div>
             </div>
           </div>

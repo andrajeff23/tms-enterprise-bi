@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, { useState } from 'react';
 import {
   FileCheck2, Search, Download, CheckCircle, Clock,
@@ -148,10 +149,10 @@ export const PODPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => alert('Export laporan POD')} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export laporan POD'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
             <Download size={14} /> <span>Export</span>
           </button>
-          {/*<button onClick={() => alert('Upload POD Baru')} className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
+          {/*<button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Upload POD Baru'})} className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
             <Upload size={16} /> <span>Upload POD</span>
           </button>*/}
         </div>
@@ -312,7 +313,7 @@ export const PODPage: React.FC = () => {
             </div>
             <div className="flex items-center justify-end gap-2 mt-4">
               {selectedPOD.status === 'UPLOADED' && (
-                <button onClick={() => { alert(`POD ${selectedPOD.podNo} berhasil diverifikasi`); setSelectedPOD(null); }} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs">Verifikasi POD</button>
+                <button onClick={() => { Swal.fire({icon: 'success', title: 'Informasi', text: `POD ${selectedPOD.podNo} berhasil diverifikasi`}); setSelectedPOD(null); }} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs">Verifikasi POD</button>
               )}
               <button onClick={() => setSelectedPOD(null)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Tutup</button>
             </div>
