@@ -1,31 +1,22 @@
 import {
   AlertTriangle,
   BarChart3,
-  Building2,
-  CalendarCheck,
   ClipboardList,
-  CreditCard,
-  Database,
   FileCheck2,
   LayoutDashboard,
   LogOut,
+  LucideMapPinHouse,
   MapPin,
-  Receipt,
+  Route,
   Settings,
-  ShieldCheck,
-  Sparkles,
-  Tag,
   Truck,
   UserCheck,
   Users,
-  Wallet,
   Wrench,
 } from "lucide-react";
 import React from "react";
-import { useDispatch } from "react-redux";
-import type { RootState } from '../../lib/store';
-import { useNavigationStore } from '../../lib/store/useNavigationStore';
-import { useAuth } from '../../../features/auth/auth.hook';
+import { useAuth } from "../../../features/auth/auth.hook";
+import { useNavigationStore } from "../../lib/store/useNavigationStore";
 
 interface SidebarItemProps {
   id: string;
@@ -50,10 +41,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   return (
     <button
       onClick={handleClick}
-      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${active
-        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold"
-        : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
-        }`}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+        active
+          ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold"
+          : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+      }`}
     >
       <span className={active ? "text-white" : "text-slate-400"}>{icon}</span>
       <span className="truncate">{label}</span>
@@ -81,15 +73,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
         },
       ],
     },
-    {
-      title: "MASTER DATA",
-      items: [
-        { id: "master-data", label: "Master Data", icon: <Database size={18} /> },
-        // { id: "driver", label: "Driver", icon: <UserCheck size={18} /> },
-        // { id: "vehicle", label: "Vehicle / Unit", icon: <Truck size={18} /> },
-        // { id: "tarif", label: "Tarif", icon: <Tag size={18} /> },
-      ],
-    },
+    // {
+    // title: "MASTER DATA",
+    // items: [
+    // { id: "master-data", label: "Master Data", icon: <Database size={18} /> },
+    // { id: "driver", label: "Driver", icon: <UserCheck size={18} /> },
+    // { id: "vehicle", label: "Vehicle / Unit", icon: <Truck size={18} /> },
+    // { id: "tarif", label: "Tarif", icon: <Tag size={18} /> },
+    // ],
+    // },
     {
       title: "OPERASIONAL",
       items: [
@@ -97,11 +89,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
           id: "order-management",
           label: "Order Management",
           icon: <ClipboardList size={18} />,
-        },
-        {
-          id: "planner",
-          label: "Planner & Penugasan",
-          icon: <CalendarCheck size={18} />,
         },
         {
           id: "delivery-order",
@@ -119,6 +106,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
           label: "Proof of Delivery",
           icon: <FileCheck2 size={18} />,
         },
+        {
+          id: "customer",
+          label: "Data Customer",
+          icon: <Users size={18} />,
+        },
+      ],
+    },
+    {
+      title: "CUSTOMER",
+      items: [
+        {
+          id: "time-line-customer",
+          label: "Status Perjalanan",
+          icon: <Route size={18} />,
+        },
+        {
+          id: "history-perjalanan",
+          label: "History Perjalanan",
+          icon: <LucideMapPinHouse size={18} />,
+        },
       ],
     },
     {
@@ -135,16 +142,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
           label: "Unit Rusak",
           icon: <AlertTriangle size={18} />,
         },
+        {
+          id: "driver",
+          label: "Data Driver",
+          icon: <UserCheck size={18} />,
+        },
+        {
+          id: "vehicle",
+          label: "Data Unit",
+          icon: <Truck size={18} />,
+        },
       ],
     },
-    {
-      title: "FINANCE",
-      items: [
-        { id: "invoice", label: "Invoice", icon: <Receipt size={18} /> },
-        { id: "payment", label: "Payment", icon: <CreditCard size={18} /> },
-        { id: "penagihan", label: "Penagihan", icon: <Building2 size={18} /> },
-      ],
-    },
+    // {
+    // title: "FINANCE",
+    // items: [
+    // { id: "invoice", label: "Invoice", icon: <Receipt size={18} /> },
+    // { id: "payment", label: "Payment", icon: <CreditCard size={18} /> },
+    // { id: "penagihan", label: "Penagihan", icon: <Building2 size={18} /> },
+    // ],
+    // },
     {
       title: "REPORTS & ANALYTICS",
       items: [
@@ -176,8 +193,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ open = false, onClose }) => {
       )}
 
       <aside
-        className={`w-64 bg-navy-900 border-r border-white/10 text-slate-200 flex flex-col h-screen fixed left-0 top-0 z-50 select-none overflow-y-auto custom-scrollbar transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0`}
+        className={`w-64 bg-navy-900 border-r border-white/10 text-slate-200 flex flex-col h-screen fixed left-0 top-0 z-50 select-none overflow-y-auto custom-scrollbar transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
       >
         {/* Brand Header */}
         <div className="px-5 py-5 flex items-center gap-3 border-b border-white/10 sticky top-0 bg-navy-900 z-10">

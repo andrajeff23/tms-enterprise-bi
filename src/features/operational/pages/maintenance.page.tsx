@@ -1,12 +1,27 @@
-import Swal from 'sweetalert2';
-import React, { useState } from 'react';
+import dayjs from "dayjs";
 import {
-  Wrench, Plus, Search, Download, CheckCircle, Clock,
-  AlertCircle, Filter, Eye, Calendar
-, ChevronLeft, ChevronRight } from 'lucide-react';
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  Eye,
+  Search,
+  Wrench,
+} from "lucide-react";
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import Swal from "sweetalert2";
 
-type WOStatus = 'OPEN' | 'IN_PROGRESS' | 'WAITING_PARTS' | 'COMPLETED' | 'CANCELLED';
-type WOType = 'PREVENTIVE' | 'CORRECTIVE' | 'EMERGENCY' | 'INSPECTION';
+type WOStatus =
+  | "OPEN"
+  | "IN_PROGRESS"
+  | "WAITING_PARTS"
+  | "COMPLETED"
+  | "CANCELLED";
+type WOType = "PREVENTIVE" | "CORRECTIVE" | "EMERGENCY" | "INSPECTION";
 
 interface WorkOrder {
   id: string;
@@ -22,23 +37,155 @@ interface WorkOrder {
   estimatedCost: number;
   actualCost: number;
   status: WOStatus;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   partsUsed: string;
 }
 
 const dummyWOs: WorkOrder[] = [
-  { id: '1', woNo: 'WO-2026-09001', vehiclePlate: 'B 4567 KXC', vehicleType: 'CDD Long Box 8T', woType: 'PREVENTIVE', description: 'Service 50.000 km: Ganti Oli Mesin, Filter Oli, Filter Udara, Cek Rem & Kopling', reportedBy: 'Sistem (Scheduled)', technicianName: 'Budi Santoso', scheduledDate: '2026-09-01', completedDate: '2026-09-02', estimatedCost: 4500000, actualCost: 4800000, status: 'COMPLETED', priority: 'MEDIUM', partsUsed: 'Oli Mesin Pertamina 5W-40, Filter Oli, Filter Udara, Pad Rem Depan' },
-  { id: '2', woNo: 'WO-2026-09002', vehiclePlate: 'B 9123 KXA', vehicleType: 'Truck Wingbox 18T', woType: 'CORRECTIVE', description: 'Perbaikan AC Kabin tidak dingin + Kebocoran Selang Radiator', reportedBy: 'Slamet Rahardjo (Driver)', technicianName: 'Agus Wijaya', scheduledDate: '2026-09-02', completedDate: '-', estimatedCost: 3200000, actualCost: 0, status: 'IN_PROGRESS', priority: 'HIGH', partsUsed: 'Freon AC, Selang Radiator, Klem Selang' },
-  { id: '3', woNo: 'WO-2026-09003', vehiclePlate: 'B 1289 KXD', vehicleType: 'Tronton Box 24T', woType: 'EMERGENCY', description: 'Ban Luar Belakang Kanan Pecah di Tol Palimanan - butuh penggantian darurat', reportedBy: 'Hendra Gunawan (Driver)', technicianName: 'Joko Susilo', scheduledDate: '2026-09-03', completedDate: '2026-09-03', estimatedCost: 2800000, actualCost: 2950000, status: 'COMPLETED', priority: 'CRITICAL', partsUsed: 'Ban Bridgestone 11R22.5, Inner Tube, Velg Luar' },
-  { id: '4', woNo: 'WO-2026-09004', vehiclePlate: 'B 9876 KXB', vehicleType: 'Trailer 40ft', woType: 'PREVENTIVE', description: 'Servis berkala 6 bulanan: Tune Up Mesin, Ganti Timing Belt, Cek Kopling', reportedBy: 'Sistem (Scheduled)', technicianName: 'Eko Prasetyo', scheduledDate: '2026-09-05', completedDate: '-', estimatedCost: 8500000, actualCost: 0, status: 'OPEN', priority: 'MEDIUM', partsUsed: '-' },
-  { id: '5', woNo: 'WO-2026-09005', vehiclePlate: 'B 1122 KXE', vehicleType: 'CDE Box 4T', woType: 'CORRECTIVE', description: 'Lampu Rem Belakang Mati - ganti bohlam dan cek wiring', reportedBy: 'Dedi Setiawan (Driver)', technicianName: 'Rudi Hermawan', scheduledDate: '2026-09-03', completedDate: '-', estimatedCost: 350000, actualCost: 0, status: 'WAITING_PARTS', priority: 'HIGH', partsUsed: 'Bohlam Rem 21W, Steker Konektor' },
-  { id: '6', woNo: 'WO-2026-09006', vehiclePlate: 'B 3344 KXF', vehicleType: 'Truck Wingbox 15T', woType: 'INSPECTION', description: 'Inspeksi tahunan KIR dan kelengkapan dokumen kendaraan', reportedBy: 'Bagian Compliance', technicianName: 'Firman Wibowo', scheduledDate: '2026-09-04', completedDate: '2026-09-04', estimatedCost: 1500000, actualCost: 1450000, status: 'COMPLETED', priority: 'LOW', partsUsed: 'Segitiga Pengaman, APAR, Sertifikat KIR' },
-  { id: '7', woNo: 'WO-2026-09007', vehiclePlate: 'B 5566 KXG', vehicleType: 'Trailer 20ft', woType: 'CORRECTIVE', description: 'Suspensi Belakang Bocor - ganti shock absorber dan bellow', reportedBy: 'Eko Prasetyo (Driver)', technicianName: 'Budi Santoso', scheduledDate: '2026-09-06', completedDate: '-', estimatedCost: 6500000, actualCost: 0, status: 'OPEN', priority: 'HIGH', partsUsed: '-' },
-  { id: '8', woNo: 'WO-2026-09008', vehiclePlate: 'B 7788 KXH', vehicleType: 'CDD Box 8T', woType: 'PREVENTIVE', description: 'Ganti Oli Gardan & Transmisi + Flush Sistem Pengereman', reportedBy: 'Sistem (Scheduled)', technicianName: 'Agus Wijaya', scheduledDate: '2026-09-07', completedDate: '-', estimatedCost: 2200000, actualCost: 0, status: 'OPEN', priority: 'LOW', partsUsed: '-' },
+  {
+    id: "1",
+    woNo: "WO-2026-09001",
+    vehiclePlate: "B 4567 KXC",
+    vehicleType: "CDD Long Box 8T",
+    woType: "PREVENTIVE",
+    description:
+      "Service 50.000 km: Ganti Oli Mesin, Filter Oli, Filter Udara, Cek Rem & Kopling",
+    reportedBy: "Sistem (Scheduled)",
+    technicianName: "Budi Santoso",
+    scheduledDate: "2026-09-01",
+    completedDate: "2026-09-02",
+    estimatedCost: 4500000,
+    actualCost: 4800000,
+    status: "COMPLETED",
+    priority: "MEDIUM",
+    partsUsed:
+      "Oli Mesin Pertamina 5W-40, Filter Oli, Filter Udara, Pad Rem Depan",
+  },
+  {
+    id: "2",
+    woNo: "WO-2026-09002",
+    vehiclePlate: "B 9123 KXA",
+    vehicleType: "Truck Wingbox 18T",
+    woType: "CORRECTIVE",
+    description: "Perbaikan AC Kabin tidak dingin + Kebocoran Selang Radiator",
+    reportedBy: "Slamet Rahardjo (Driver)",
+    technicianName: "Agus Wijaya",
+    scheduledDate: "2026-09-02",
+    completedDate: "-",
+    estimatedCost: 3200000,
+    actualCost: 0,
+    status: "IN_PROGRESS",
+    priority: "HIGH",
+    partsUsed: "Freon AC, Selang Radiator, Klem Selang",
+  },
+  {
+    id: "3",
+    woNo: "WO-2026-09003",
+    vehiclePlate: "B 1289 KXD",
+    vehicleType: "Tronton Box 24T",
+    woType: "EMERGENCY",
+    description:
+      "Ban Luar Belakang Kanan Pecah di Tol Palimanan - butuh penggantian darurat",
+    reportedBy: "Hendra Gunawan (Driver)",
+    technicianName: "Joko Susilo",
+    scheduledDate: "2026-09-03",
+    completedDate: "2026-09-03",
+    estimatedCost: 2800000,
+    actualCost: 2950000,
+    status: "COMPLETED",
+    priority: "CRITICAL",
+    partsUsed: "Ban Bridgestone 11R22.5, Inner Tube, Velg Luar",
+  },
+  {
+    id: "4",
+    woNo: "WO-2026-09004",
+    vehiclePlate: "B 9876 KXB",
+    vehicleType: "Trailer 40ft",
+    woType: "PREVENTIVE",
+    description:
+      "Servis berkala 6 bulanan: Tune Up Mesin, Ganti Timing Belt, Cek Kopling",
+    reportedBy: "Sistem (Scheduled)",
+    technicianName: "Eko Prasetyo",
+    scheduledDate: "2026-09-05",
+    completedDate: "-",
+    estimatedCost: 8500000,
+    actualCost: 0,
+    status: "OPEN",
+    priority: "MEDIUM",
+    partsUsed: "-",
+  },
+  {
+    id: "5",
+    woNo: "WO-2026-09005",
+    vehiclePlate: "B 1122 KXE",
+    vehicleType: "CDE Box 4T",
+    woType: "CORRECTIVE",
+    description: "Lampu Rem Belakang Mati - ganti bohlam dan cek wiring",
+    reportedBy: "Dedi Setiawan (Driver)",
+    technicianName: "Rudi Hermawan",
+    scheduledDate: "2026-09-03",
+    completedDate: "-",
+    estimatedCost: 350000,
+    actualCost: 0,
+    status: "WAITING_PARTS",
+    priority: "HIGH",
+    partsUsed: "Bohlam Rem 21W, Steker Konektor",
+  },
+  {
+    id: "6",
+    woNo: "WO-2026-09006",
+    vehiclePlate: "B 3344 KXF",
+    vehicleType: "Truck Wingbox 15T",
+    woType: "INSPECTION",
+    description: "Inspeksi tahunan KIR dan kelengkapan dokumen kendaraan",
+    reportedBy: "Bagian Compliance",
+    technicianName: "Firman Wibowo",
+    scheduledDate: "2026-09-04",
+    completedDate: "2026-09-04",
+    estimatedCost: 1500000,
+    actualCost: 1450000,
+    status: "COMPLETED",
+    priority: "LOW",
+    partsUsed: "Segitiga Pengaman, APAR, Sertifikat KIR",
+  },
+  {
+    id: "7",
+    woNo: "WO-2026-09007",
+    vehiclePlate: "B 5566 KXG",
+    vehicleType: "Trailer 20ft",
+    woType: "CORRECTIVE",
+    description: "Suspensi Belakang Bocor - ganti shock absorber dan bellow",
+    reportedBy: "Eko Prasetyo (Driver)",
+    technicianName: "Budi Santoso",
+    scheduledDate: "2026-09-06",
+    completedDate: "-",
+    estimatedCost: 6500000,
+    actualCost: 0,
+    status: "OPEN",
+    priority: "HIGH",
+    partsUsed: "-",
+  },
+  {
+    id: "8",
+    woNo: "WO-2026-09008",
+    vehiclePlate: "B 7788 KXH",
+    vehicleType: "CDD Box 8T",
+    woType: "PREVENTIVE",
+    description: "Ganti Oli Gardan & Transmisi + Flush Sistem Pengereman",
+    reportedBy: "Sistem (Scheduled)",
+    technicianName: "Agus Wijaya",
+    scheduledDate: "2026-09-07",
+    completedDate: "-",
+    estimatedCost: 2200000,
+    actualCost: 0,
+    status: "OPEN",
+    priority: "LOW",
+    partsUsed: "-",
+  },
 ];
 
 export const MaintenancePage: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -48,11 +195,20 @@ export const MaintenancePage: React.FC = () => {
     return (
       <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
         <div className="text-xs text-slate-500 font-medium">
-          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+          Menampilkan{" "}
+          <span className="font-bold text-slate-800">
+            {dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+          </span>{" "}
+          -{" "}
+          <span className="font-bold text-slate-800">
+            {Math.min(currentPage * itemsPerPage, dataLength)}
+          </span>{" "}
+          dari <span className="font-bold text-slate-800">{dataLength}</span>{" "}
+          data
         </div>
         <div className="flex items-center gap-1">
-          <button 
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
           >
@@ -70,9 +226,9 @@ export const MaintenancePage: React.FC = () => {
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
-                    currentPage === pageNum 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-600 hover:bg-slate-200'
+                    currentPage === pageNum
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-600 hover:bg-slate-200"
                   }`}
                 >
                   {pageNum}
@@ -80,8 +236,8 @@ export const MaintenancePage: React.FC = () => {
               );
             })}
           </div>
-          <button 
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
           >
@@ -92,79 +248,150 @@ export const MaintenancePage: React.FC = () => {
     );
   };
 
-  const [filterStatus, setFilterStatus] = useState('ALL');
-  const [filterType, setFilterType] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [filterType, setFilterType] = useState("ALL");
   const [showModal, setShowModal] = useState(false);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(dummyWOs);
 
+  const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
+  const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
+
   const [newWO, setNewWO] = useState({
-    vehiclePlate: 'B 9123 KXA',
-    woType: 'PREVENTIVE' as WOType,
-    description: '',
-    technicianName: 'Budi Santoso',
-    scheduledDate: '2026-09-10',
+    vehiclePlate: "B 9123 KXA",
+    woType: "PREVENTIVE" as WOType,
+    description: "",
+    technicianName: "Budi Santoso",
+    scheduledDate: "2026-09-10",
     estimatedCost: 2000000,
-    priority: 'MEDIUM' as WorkOrder['priority'],
+    priority: "MEDIUM" as WorkOrder["priority"],
   });
 
   const statusBadge = (s: WOStatus) => {
-    const map: Record<WOStatus, { cls: string; icon: React.ReactNode; label: string }> = {
-      OPEN: { cls: 'bg-slate-100 text-slate-600', icon: <AlertCircle size={11} />, label: 'Open' },
-      IN_PROGRESS: { cls: 'bg-blue-100 text-blue-700', icon: <Clock size={11} />, label: 'In Progress' },
-      WAITING_PARTS: { cls: 'bg-amber-100 text-amber-700', icon: <AlertCircle size={11} />, label: 'Tunggu Parts' },
-      COMPLETED: { cls: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle size={11} />, label: 'Selesai' },
-      CANCELLED: { cls: 'bg-rose-100 text-rose-700', icon: <Clock size={11} />, label: 'Dibatalkan' },
+    const map: Record<
+      WOStatus,
+      { cls: string; icon: React.ReactNode; label: string }
+    > = {
+      OPEN: {
+        cls: "bg-slate-100 text-slate-600",
+        icon: <AlertCircle size={11} />,
+        label: "Open",
+      },
+      IN_PROGRESS: {
+        cls: "bg-blue-100 text-blue-700",
+        icon: <Clock size={11} />,
+        label: "In Progress",
+      },
+      WAITING_PARTS: {
+        cls: "bg-amber-100 text-amber-700",
+        icon: <AlertCircle size={11} />,
+        label: "Tunggu Parts",
+      },
+      COMPLETED: {
+        cls: "bg-emerald-100 text-emerald-700",
+        icon: <CheckCircle size={11} />,
+        label: "Selesai",
+      },
+      CANCELLED: {
+        cls: "bg-rose-100 text-rose-700",
+        icon: <Clock size={11} />,
+        label: "Dibatalkan",
+      },
     };
     const d = map[s];
-    return <span className={`${d.cls} px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-fit`}>{d.icon} {d.label}</span>;
+    return (
+      <span
+        className={`${d.cls} px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-fit`}
+      >
+        {d.icon} {d.label}
+      </span>
+    );
   };
 
-  const priorityBadge = (p: WorkOrder['priority']) => {
-    const map = { LOW: 'bg-slate-100 text-slate-600', MEDIUM: 'bg-amber-100 text-amber-700', HIGH: 'bg-orange-100 text-orange-700', CRITICAL: 'bg-rose-100 text-rose-700' };
-    return <span className={`${map[p]} px-2 py-0.5 rounded font-bold text-[10px]`}>{p}</span>;
+  const priorityBadge = (p: WorkOrder["priority"]) => {
+    const map = {
+      LOW: "bg-slate-100 text-slate-600",
+      MEDIUM: "bg-amber-100 text-amber-700",
+      HIGH: "bg-orange-100 text-orange-700",
+      CRITICAL: "bg-rose-100 text-rose-700",
+    };
+    return (
+      <span className={`${map[p]} px-2 py-0.5 rounded font-bold text-[10px]`}>
+        {p}
+      </span>
+    );
   };
 
   const typeBadge = (t: WOType) => {
     const map = {
-      PREVENTIVE: 'bg-green-100 text-green-700',
-      CORRECTIVE: 'bg-blue-100 text-blue-700',
-      EMERGENCY: 'bg-rose-100 text-rose-700',
-      INSPECTION: 'bg-purple-100 text-purple-700',
+      PREVENTIVE: "bg-green-100 text-green-700",
+      CORRECTIVE: "bg-blue-100 text-blue-700",
+      EMERGENCY: "bg-rose-100 text-rose-700",
+      INSPECTION: "bg-purple-100 text-purple-700",
     };
-    return <span className={`${map[t]} px-2 py-0.5 rounded font-bold text-[10px]`}>{t}</span>;
+    return (
+      <span className={`${map[t]} px-2 py-0.5 rounded font-bold text-[10px]`}>
+        {t}
+      </span>
+    );
   };
 
-  const filtered = workOrders.filter(w => {
+  const filtered = workOrders.filter((w) => {
     const q = search.toLowerCase();
-    const match = w.woNo.toLowerCase().includes(q) || w.vehiclePlate.toLowerCase().includes(q) || w.technicianName.toLowerCase().includes(q) || w.description.toLowerCase().includes(q);
-    return match && (filterStatus === 'ALL' || w.status === filterStatus) && (filterType === 'ALL' || w.woType === filterType);
+    const match =
+      w.woNo.toLowerCase().includes(q) ||
+      w.vehiclePlate.toLowerCase().includes(q) ||
+      w.technicianName.toLowerCase().includes(q) ||
+      w.description.toLowerCase().includes(q);
+
+    let matchDate = true;
+    if (filterStartDate || filterEndDate) {
+      const orderDate = dayjs(w.scheduledDate);
+      if (filterStartDate && orderDate.isBefore(filterStartDate, "day")) {
+        matchDate = false;
+      }
+      if (filterEndDate && orderDate.isAfter(filterEndDate, "day")) {
+        matchDate = false;
+      }
+    }
+    return (
+      match &&
+      (filterStatus === "ALL" || w.status === filterStatus) &&
+      (filterType === "ALL" || w.woType === filterType) &&
+      matchDate
+    );
   });
 
-  const totalCost = workOrders.filter(w => w.status === 'COMPLETED').reduce((s, w) => s + w.actualCost, 0);
-  const fmt = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
+  const totalCost = workOrders
+    .filter((w) => w.status === "COMPLETED")
+    .reduce((s, w) => s + w.actualCost, 0);
+  const fmt = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     const next: WorkOrder = {
       id: String(workOrders.length + 1),
-      woNo: `WO-2026-090${String(workOrders.length + 9).padStart(2, '0')}`,
+      woNo: `WO-2026-090${String(workOrders.length + 9).padStart(2, "0")}`,
       vehiclePlate: newWO.vehiclePlate,
-      vehicleType: 'Truck',
+      vehicleType: "Truck",
       woType: newWO.woType,
-      description: newWO.description || 'Work Order baru',
-      reportedBy: 'Admin / Dispatcher',
+      description: newWO.description || "Work Order baru",
+      reportedBy: "Admin / Dispatcher",
       technicianName: newWO.technicianName,
       scheduledDate: newWO.scheduledDate,
-      completedDate: '-',
+      completedDate: "-",
       estimatedCost: newWO.estimatedCost,
       actualCost: 0,
-      status: 'OPEN',
+      status: "OPEN",
       priority: newWO.priority,
-      partsUsed: '-',
+      partsUsed: "-",
     };
     setWorkOrders([next, ...workOrders]);
     setShowModal(false);
-    Swal.fire({icon: 'success', title: 'Informasi', text: `✅ Work Order ${next.woNo} berhasil dibuat!`});
+    Swal.fire({
+      icon: "success",
+      title: "Informasi",
+      text: `✅ Work Order ${next.woNo} berhasil dibuat!`,
+    });
   };
 
   return (
@@ -176,12 +403,26 @@ export const MaintenancePage: React.FC = () => {
             <Wrench size={20} className="text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Maintenance & Work Order</h2>
-            <p className="text-xs text-slate-500">Jadwal servis, perbaikan kendaraan, dan manajemen work order mekanik</p>
+            <h2 className="text-lg font-bold text-slate-900">
+              Maintenance & Work Order
+            </h2>
+            <p className="text-xs text-slate-500">
+              Jadwal servis, perbaikan kendaraan, dan manajemen work order
+              mekanik
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export data maintenance'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button
+            onClick={() =>
+              Swal.fire({
+                icon: "success",
+                title: "Informasi",
+                text: "Export data maintenance",
+              })
+            }
+            className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors"
+          >
             <Download size={14} /> <span>Export</span>
           </button>
           {/*<button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -228,19 +469,82 @@ export const MaintenancePage: React.FC = () => {
       {/* Filter */}
       <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={16} className="text-slate-400 absolute left-3 top-2.5" />
-          <input type="text" placeholder="Cari No. WO, Plat, Teknisi, Deskripsi..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none" />
+          <Search
+            size={16}
+            className="text-slate-400 absolute left-3 top-2.5"
+          />
+          <input
+            type="text"
+            placeholder="Cari No. WO, Plat, Teknisi, Deskripsi..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none"
+          />
         </div>
+
+        {/* Date Filters */}
+        <div className="relative w-full sm:w-auto">
+          <DatePicker
+            selected={filterStartDate}
+            onChange={(date: Date | null) => setFilterStartDate(date)}
+            placeholderText="Tanggal Mulai"
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
+        <span className="text-xs text-slate-500 px-1">s/d</span>
+
+        <div className="relative w-full sm:w-auto">
+          <DatePicker
+            selected={filterEndDate}
+            onChange={(date: Date | null) => setFilterEndDate(date)}
+            placeholderText="Tanggal Selesai"
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
+        {/* Button Reset*/}
+        <button
+          onClick={() => {
+            setSearch("");
+            setFilterStatus("ALL");
+            setFilterStartDate(null);
+            setFilterEndDate(null);
+          }}
+          className="
+                h-10
+                w-[135px]
+                bg-slate-50
+                border border-slate-300
+                text-xs
+                font-medium
+                text-slate-700
+                rounded-lg
+                px-3
+                focus:outline-none
+                focus:ring-2
+                focus:ring-indigo-500/20
+              "
+        >
+          Reset Tanggal
+        </button>
         <div className="flex items-center gap-2">
-          <Filter size={14} className="text-slate-400" />
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="bg-slate-50 h-10 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none"
+          >
             <option value="ALL">Semua Status</option>
             <option value="OPEN">Open</option>
             <option value="IN_PROGRESS">In Progress</option>
             <option value="WAITING_PARTS">Tunggu Parts</option>
             <option value="COMPLETED">Selesai</option>
           </select>
-          <select value={filterType} onChange={e => setFilterType(e.target.value)} className="bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="bg-slate-50 h-10 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none"
+          >
             <option value="ALL">Semua Tipe</option>
             <option value="PREVENTIVE">Preventive</option>
             <option value="CORRECTIVE">Corrective</option>
@@ -253,7 +557,9 @@ export const MaintenancePage: React.FC = () => {
       {/* Table */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-slate-900 text-sm">Daftar Work Order Maintenance</h3>
+          <h3 className="font-bold text-slate-900 text-sm">
+            Daftar Work Order Maintenance
+          </h3>
           <span className="text-xs text-slate-500">{filtered.length} WO</span>
         </div>
         <div className="overflow-x-auto">
@@ -273,36 +579,79 @@ export const MaintenancePage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(w => (
-                <tr key={w.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="p-3.5 font-bold text-amber-600">{w.woNo}</td>
-                  <td className="p-3.5">
-                    <div className="font-bold text-slate-900">{w.vehiclePlate}</div>
-                    <div className="text-[11px] text-slate-400">{w.vehicleType}</div>
-                  </td>
-                  <td className="p-3.5">{typeBadge(w.woType)}</td>
-                  <td className="p-3.5">
-                    <div className="font-semibold text-slate-800 max-w-[200px] truncate" title={w.description}>{w.description}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">By: {w.reportedBy}</div>
-                  </td>
-                  <td className="p-3.5 font-semibold text-slate-700">{w.technicianName}</td>
-                  <td className="p-3.5">
-                    <div className="flex items-center gap-1 text-slate-700"><Calendar size={11} className="text-slate-400" /> {w.scheduledDate}</div>
-                    {w.completedDate !== '-' && <div className="text-[10px] text-emerald-600 mt-0.5">Done: {w.completedDate}</div>}
-                  </td>
-                  <td className="p-3.5 text-right">
-                    <div className="font-bold text-slate-900">{fmt(w.estimatedCost)}</div>
-                    {w.actualCost > 0 && <div className="text-[10px] text-emerald-600">Aktual: {fmt(w.actualCost)}</div>}
-                  </td>
-                  <td className="p-3.5">{priorityBadge(w.priority)}</td>
-                  <td className="p-3.5">{statusBadge(w.status)}</td>
-                  <td className="p-3.5 text-center">
-                    <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Detail WO: ${w.woNo}\n\nParts: ${w.partsUsed}`})} className="inline-flex items-center gap-1 text-amber-600 hover:text-amber-800 font-semibold text-[11px]">
-                      <Eye size={12} /> Detail
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filtered
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage,
+                )
+                .map((w) => (
+                  <tr
+                    key={w.id}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
+                    <td className="p-3.5 font-bold text-amber-600">{w.woNo}</td>
+                    <td className="p-3.5">
+                      <div className="font-bold text-slate-900">
+                        {w.vehiclePlate}
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        {w.vehicleType}
+                      </div>
+                    </td>
+                    <td className="p-3.5">{typeBadge(w.woType)}</td>
+                    <td className="p-3.5">
+                      <div
+                        className="font-semibold text-slate-800 max-w-[200px] truncate"
+                        title={w.description}
+                      >
+                        {w.description}
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">
+                        By: {w.reportedBy}
+                      </div>
+                    </td>
+                    <td className="p-3.5 font-semibold text-slate-700">
+                      {w.technicianName}
+                    </td>
+                    <td className="p-3.5">
+                      <div className="flex items-center gap-1 text-slate-700">
+                        <Calendar size={11} className="text-slate-400" />{" "}
+                        {w.scheduledDate}
+                      </div>
+                      {w.completedDate !== "-" && (
+                        <div className="text-[10px] text-emerald-600 mt-0.5">
+                          Done: {w.completedDate}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3.5 text-right">
+                      <div className="font-bold text-slate-900">
+                        {fmt(w.estimatedCost)}
+                      </div>
+                      {w.actualCost > 0 && (
+                        <div className="text-[10px] text-emerald-600">
+                          Aktual: {fmt(w.actualCost)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3.5">{priorityBadge(w.priority)}</td>
+                    <td className="p-3.5">{statusBadge(w.status)}</td>
+                    <td className="p-3.5 text-center">
+                      <button
+                        onClick={() =>
+                          Swal.fire({
+                            icon: "success",
+                            title: "Informasi",
+                            text: `Detail WO: ${w.woNo}\n\nParts: ${w.partsUsed}`,
+                          })
+                        }
+                        className="inline-flex items-center gap-1 text-amber-600 hover:text-amber-800 font-semibold text-[11px]"
+                      >
+                        <Eye size={12} /> Detail
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -314,19 +663,40 @@ export const MaintenancePage: React.FC = () => {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Wrench size={18} className="text-amber-500" /> Buat Work Order Baru
+              <Wrench size={18} className="text-amber-500" /> Buat Work Order
+              Baru
             </h3>
             <form onSubmit={handleCreate} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Plat Kendaraan</label>
-                  <select value={newWO.vehiclePlate} onChange={e => setNewWO({ ...newWO, vehiclePlate: e.target.value })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5">
-                    <option>B 9123 KXA</option><option>B 9876 KXB</option><option>B 4567 KXC</option><option>B 1289 KXD</option><option>B 1122 KXE</option>
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Plat Kendaraan
+                  </label>
+                  <select
+                    value={newWO.vehiclePlate}
+                    onChange={(e) =>
+                      setNewWO({ ...newWO, vehiclePlate: e.target.value })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  >
+                    <option>B 9123 KXA</option>
+                    <option>B 9876 KXB</option>
+                    <option>B 4567 KXC</option>
+                    <option>B 1289 KXD</option>
+                    <option>B 1122 KXE</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Tipe WO</label>
-                  <select value={newWO.woType} onChange={e => setNewWO({ ...newWO, woType: e.target.value as WOType })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Tipe WO
+                  </label>
+                  <select
+                    value={newWO.woType}
+                    onChange={(e) =>
+                      setNewWO({ ...newWO, woType: e.target.value as WOType })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  >
                     <option value="PREVENTIVE">Preventive</option>
                     <option value="CORRECTIVE">Corrective</option>
                     <option value="EMERGENCY">Emergency</option>
@@ -335,19 +705,53 @@ export const MaintenancePage: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Deskripsi Pekerjaan</label>
-                <textarea required rows={3} placeholder="Jelaskan kerusakan atau jenis servis yang diperlukan..." value={newWO.description} onChange={e => setNewWO({ ...newWO, description: e.target.value })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 resize-none" />
+                <label className="block text-slate-600 font-semibold mb-1">
+                  Deskripsi Pekerjaan
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Jelaskan kerusakan atau jenis servis yang diperlukan..."
+                  value={newWO.description}
+                  onChange={(e) =>
+                    setNewWO({ ...newWO, description: e.target.value })
+                  }
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 resize-none"
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Teknisi Assigned</label>
-                  <select value={newWO.technicianName} onChange={e => setNewWO({ ...newWO, technicianName: e.target.value })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5">
-                    <option>Budi Santoso</option><option>Agus Wijaya</option><option>Joko Susilo</option><option>Eko Prasetyo</option><option>Rudi Hermawan</option>
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Teknisi Assigned
+                  </label>
+                  <select
+                    value={newWO.technicianName}
+                    onChange={(e) =>
+                      setNewWO({ ...newWO, technicianName: e.target.value })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  >
+                    <option>Budi Santoso</option>
+                    <option>Agus Wijaya</option>
+                    <option>Joko Susilo</option>
+                    <option>Eko Prasetyo</option>
+                    <option>Rudi Hermawan</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Prioritas</label>
-                  <select value={newWO.priority} onChange={e => setNewWO({ ...newWO, priority: e.target.value as WorkOrder['priority'] })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Prioritas
+                  </label>
+                  <select
+                    value={newWO.priority}
+                    onChange={(e) =>
+                      setNewWO({
+                        ...newWO,
+                        priority: e.target.value as WorkOrder["priority"],
+                      })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  >
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
                     <option value="HIGH">HIGH</option>
@@ -357,17 +761,49 @@ export const MaintenancePage: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Tanggal Jadwal</label>
-                  <input type="date" value={newWO.scheduledDate} onChange={e => setNewWO({ ...newWO, scheduledDate: e.target.value })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5" />
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Tanggal Jadwal
+                  </label>
+                  <input
+                    type="date"
+                    value={newWO.scheduledDate}
+                    onChange={(e) =>
+                      setNewWO({ ...newWO, scheduledDate: e.target.value })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Est. Biaya (Rp)</label>
-                  <input type="number" value={newWO.estimatedCost} onChange={e => setNewWO({ ...newWO, estimatedCost: Number(e.target.value) })} className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5" />
+                  <label className="block text-slate-600 font-semibold mb-1">
+                    Est. Biaya (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    value={newWO.estimatedCost}
+                    onChange={(e) =>
+                      setNewWO({
+                        ...newWO,
+                        estimatedCost: Number(e.target.value),
+                      })
+                    }
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
+                  />
                 </div>
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Batal</button>
-                <button type="submit" className="px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 text-xs">Buat Work Order</button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 text-xs"
+                >
+                  Buat Work Order
+                </button>
               </div>
             </form>
           </div>

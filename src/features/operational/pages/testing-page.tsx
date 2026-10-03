@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {
   AlertCircle,
   CheckCircle,
@@ -6,14 +5,13 @@ import {
   ChevronRight,
   Clock,
   Download,
+  Filter,
   Package,
   Plus,
   Search,
   XCircle,
 } from "lucide-react";
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import type { TransportOrder } from "../../../shared/types/tms.types";
 
@@ -89,20 +87,8 @@ export const OrderManagementPage: React.FC = () => {
   const [showSearchDestination, setShowSearchDestination] = useState(false);
   const [searchProcedure, setSearchProcedure] = useState("");
   const [showSearchProcedure, setShowSearchProcedure] = useState(false);
-  const [showSearchItem, setShowSearchItem] = useState(false);
-  const [searchItem, setSearchItem] = useState("");
-  const [showSearchCustomerReference, setShowSearchCustomerReference] =
-    useState(false);
-  const [searchCustomerReference, setSearchCustomerReference] = useState("");
-  const [searchUnit, setSearchUnit] = useState("");
-  const [showSearchUnit, setShowSearchUnit] = useState(false);
   const [searchPaymentTerm, setSearchPaymentTerm] = useState("");
   const [showSearchPaymentTerm, setShowSearchPaymentTerm] = useState(false);
-
-  const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
-  const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("ALL");
 
   const origins = [
     "Belawan",
@@ -141,20 +127,6 @@ export const OrderManagementPage: React.FC = () => {
     "MOTOR LUAR PROC",
     "RENTAL PROCEDURES",
   ];
-
-  const customerReferences = [
-    "TRANS",
-    "TRANSCON",
-    "PARTY 70 - GPM",
-    "GRAH01",
-    "GRAH03",
-    "KTJ-PERDANGAN",
-    "GRAHA PUTRA MANDIRI",
-    "UNILVER",
-    "SOCI MAS",
-    "Partai 163",
-    "Partai 115",
-  ];
   const paymentTerms = [
     "Payable immediately Due net",
     "within 14 days 2 % cash discount",
@@ -166,32 +138,6 @@ export const OrderManagementPage: React.FC = () => {
     "Payment Customer Within 21 days Due Net",
     "Payment Customer Within 30 days Due Net",
   ];
-  const items = [
-    "CONTAINER_2X20FT",
-    "CONTAINER_40FT",
-    "CONTAINER_40FT",
-    "PUPUK",
-    "PASIR",
-    "BESI",
-    "CONTAINER_1X20 FT",
-    "PILE",
-    "BATU_BARA",
-    "MATERIAL",
-    "FLATTRUCK_20FT",
-    "ISOTANK_40FT",
-  ];
-
-  const unit = [
-    "TRP",
-    "PC",
-    "UNT",
-    "TON",
-    "LOT",
-    "TO",
-    "SHF",
-    "PACK",
-    "BUNDLE",
-  ];
 
   const filteredOrigins = origins.filter((o) =>
     o.toLowerCase().includes(searchOrigin.toLowerCase()),
@@ -202,17 +148,8 @@ export const OrderManagementPage: React.FC = () => {
   const filteredProcedures = procedures.filter((p) =>
     p.toLowerCase().includes(searchProcedure.toLowerCase()),
   );
-  const filteredItems = items.filter((i) =>
-    i.toLowerCase().includes(searchItem.toLowerCase()),
-  );
-  const filteredUnits = unit.filter((i) =>
-    i.toLowerCase().includes(searchUnit.toLowerCase()),
-  );
   const filteredPaymentTerms = paymentTerms.filter((p) =>
     p.toLowerCase().includes(searchPaymentTerm.toLowerCase()),
-  );
-  const filteredCustomerReferences = customerReferences.filter((p) =>
-    p.toLowerCase().includes(searchCustomerReference.toLowerCase()),
   );
 
   const [orders, setOrders] = useState<TransportOrder[]>([
@@ -220,65 +157,60 @@ export const OrderManagementPage: React.FC = () => {
       id: "1",
       orderNumber: "DO-2026-0501",
       customerName: "PT. ABC Indonesia",
-      customerRef: "TRANS",
       origin: "Jakarta (Tanjung Priok)",
       destination: "Surabaya (Gresik)",
       status: "DELIVERED",
-      requestDate: "2026-05-31",
-      vehicleType: "Truk",
-      paymentTerm: "COD",
+      driverName: "Slamet Rahardjo",
+      vehiclePlate: "B 9123 KXA",
+      date: "2026-05-31",
       revenue: 15000000,
     },
     {
       id: "2",
       orderNumber: "DO-2026-0502",
       customerName: "PT. XYZ Nusantara",
-      customerRef: "TRANSCON",
       origin: "Bandung (Cimahi)",
       destination: "Semarang (Kendal)",
       status: "IN_PROGRESS",
-      requestDate: "2026-01-31",
-      vehicleType: "Truck",
-      paymentTerm: "Overdue 12 Hari",
+      driverName: "Budi Kurniawan",
+      vehiclePlate: "B 9876 KXB",
+      date: "2026-05-31",
       revenue: 8500000,
     },
     {
       id: "3",
       orderNumber: "DO-2026-0503",
       customerName: "PT. Maju Bersama",
-      customerRef: "GRAHA01",
       origin: "Jakarta (Cikarang)",
       destination: "Medan (Belawan)",
       status: "PENDING",
-      requestDate: "2026-05-30",
-      vehicleType: "Trailler",
-      paymentTerm: "Overdue 130 Hari",
+      driverName: "Andi Saputra",
+      vehiclePlate: "B 4567 KXC",
+      date: "2026-05-30",
       revenue: 22000000,
     },
     {
       id: "4",
       orderNumber: "DO-2026-0504",
       customerName: "PT. Sukses Makmur",
-      customerRef: "GRAHA03",
       origin: "Surabaya (Rungkut)",
       destination: "Balikpapan (Kariangau)",
       status: "DELIVERED",
-      requestDate: "2026-09-29",
-      vehicleType: "Dump Truck",
-      paymentTerm: "COD",
+      driverName: "Hendra Gunawan",
+      vehiclePlate: "B 1289 KXD",
+      date: "2026-05-29",
       revenue: 18000000,
     },
     {
       id: "5",
       orderNumber: "DO-2026-0505",
       customerName: "PT. Sejahtera Abadi",
-      customerRef: "GRAHA03",
       origin: "Semarang (Terboyo)",
       destination: "Makassar (Soekarno Hatta)",
       status: "CANCELLED",
-      requestDate: "2026-09-28",
-      vehicleType: "Dump Truck",
-      paymentTerm: "Cash",
+      driverName: "Dedi Setiawan",
+      vehiclePlate: "B 1122 KXE",
+      date: "2026-05-28",
       revenue: 12000000,
     },
   ]);
@@ -286,28 +218,22 @@ export const OrderManagementPage: React.FC = () => {
   const [newOrder, setNewOrder] = useState({
     customerName: "",
     customerRef: "",
-    quantity: "",
-    origin: origins[0],
-    destination: destinations[0],
+    origin: "",
+    destination: "",
     procedure: "",
-    deskripsi: "",
-    item: "",
-    unit: "",
     driverName: "Slamet Rahardjo",
-    vehicleType: "Truck",
+    vehiclePlate: "B 9123 KXA",
     requestDate: new Date().toISOString().split("T")[0],
-    paymentTerm: "COD",
+    paymentTerm: "Payable immediately Due net",
     revenue: 0,
-    jumlahBayar: "",
+    quantity: 1,
+    jumlahBayar: 0,
   });
 
   React.useEffect(() => {
     const quant = newOrder.quantity || 0;
     const bayar = newOrder.jumlahBayar || 0;
-    setNewOrder((prev) => ({
-      ...prev,
-      revenue: Number(quant) * Number(bayar),
-    }));
+    setNewOrder((prev) => ({ ...prev, revenue: quant * bayar }));
   }, [newOrder.quantity, newOrder.jumlahBayar]);
 
   const handleCreateOrder = (e: React.FormEvent) => {
@@ -316,13 +242,12 @@ export const OrderManagementPage: React.FC = () => {
       id: String(orders.length + 1),
       orderNumber: `DO-2026-05${String(orders.length + 6).padStart(2, "0")}`,
       customerName: newOrder.customerName || "PT. Mitra Baru",
-      customerRef: newOrder.customerRef || "GRAHA03",
       origin: newOrder.origin || "Jakarta",
-      destination: newOrder.destination || "",
+      destination: newOrder.destination || "Surabaya",
       status: "PENDING",
-      requestDate: newOrder.requestDate,
-      vehicleType: newOrder.vehicleType || "Truck",
-      paymentTerm: newOrder.paymentTerm,
+      driverName: newOrder.driverName,
+      vehiclePlate: newOrder.vehiclePlate,
+      date: "2026-05-31",
       revenue: Number(newOrder.revenue),
     };
 
@@ -339,21 +264,10 @@ export const OrderManagementPage: React.FC = () => {
     const matchesSearch =
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.paymentTerm.toLowerCase().includes(searchTerm.toLowerCase());
+      order.driverName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       selectedStatus === "ALL" || order.status === selectedStatus;
-
-    let matchDate = true;
-    if (filterStartDate || filterEndDate) {
-      const orderDate = dayjs(order.requestDate);
-      if (filterStartDate && orderDate.isBefore(filterStartDate, "day")) {
-        matchDate = false;
-      }
-      if (filterEndDate && orderDate.isAfter(filterEndDate, "day")) {
-        matchDate = false;
-      }
-    }
-    return matchesSearch && matchesStatus && matchDate;
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusBadge = (status: TransportOrder["status"]) => {
@@ -451,61 +365,15 @@ export const OrderManagementPage: React.FC = () => {
             placeholder="Cari Nomor Order, Customer, Driver..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none"
+            className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none"
           />
         </div>
-        {/* Date Filters */}
-        <div className="relative w-full sm:w-auto">
-          <DatePicker
-            selected={filterStartDate}
-            onChange={(date: Date | null) => setFilterStartDate(date)}
-            placeholderText="Tanggal Mulai"
-            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-            dateFormat="dd/MM/yyyy"
-          />
-        </div>
-
-        <span className="text-xs text-slate-500 px-1">s/d</span>
-
-        <div className="relative w-full sm:w-auto">
-          <DatePicker
-            selected={filterEndDate}
-            onChange={(date: Date | null) => setFilterEndDate(date)}
-            placeholderText="Tanggal Selesai"
-            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-            dateFormat="dd/MM/yyyy"
-          />
-        </div>
-        {/* Button Reset*/}
-        <button
-          onClick={() => {
-            setSearch("");
-            setFilterStatus("ALL");
-            setFilterStartDate(null);
-            setFilterEndDate(null);
-          }}
-          className="
-              h-[40px]
-              w-[135px]
-              bg-slate-50
-              border border-slate-300
-              text-xs
-              font-medium
-              text-slate-700
-              rounded-lg
-              px-3
-              focus:outline-none
-              focus:ring-2
-              focus:ring-indigo-500/20
-            "
-        >
-          Reset Tanggal
-        </button>
         <div className="flex items-center gap-2">
+          <Filter size={14} className="text-slate-400" />
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-slate-50 h-10 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none"
+            className="bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none"
           >
             <option value="ALL">Semua Status</option>
             <option value="DELIVERED">Delivered</option>
@@ -532,11 +400,8 @@ export const OrderManagementPage: React.FC = () => {
               <tr>
                 <th className="p-3.5">No. Order</th>
                 <th className="p-3.5">Customer</th>
-                <th className="p-3.5">Customer Reference</th>
-                <th className="p-3.5">From - Destination</th>
-                <th className="p-3.5">Vechicle Type</th>
-                <th className="p-3.5">Payment Term</th>
-                <th className="p-3.5">Tanggal Request</th>
+                <th className="p-3.5">Asal - Tujuan</th>
+                <th className="p-3.5">Driver & Armada</th>
                 <th className="p-3.5">Status</th>
                 <th className="p-3.5 text-right">Nilai Order</th>
                 <th className="p-3.5 text-center">Aksi</th>
@@ -559,9 +424,6 @@ export const OrderManagementPage: React.FC = () => {
                     <td className="p-3.5 font-semibold text-slate-900">
                       {ord.customerName}
                     </td>
-                    <td className="p-3.5 font-semibold text-slate-900">
-                      {ord.customerRef}
-                    </td>
                     <td className="p-3.5">
                       <div className="font-semibold text-slate-800">
                         {ord.origin}
@@ -571,21 +433,12 @@ export const OrderManagementPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="p-3.5">
-                      <div className="text-[11px] text-slate-500">
-                        {ord.vehicleType}
-                      </div>
-                    </td>
-                    <td className="p-3.5">
                       <div className="font-semibold text-slate-800">
-                        {ord.paymentTerm}
+                        {ord.driverName}
                       </div>
-                    </td>
-                    <td className="p-3.5">
-                      {new Date(ord.requestDate).toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      <div className="text-[11px] text-slate-500">
+                        {ord.vehiclePlate}
+                      </div>
                     </td>
                     <td className="p-3.5">{getStatusBadge(ord.status)}</td>
                     <td className="p-3.5 text-right font-bold text-slate-900">
@@ -616,13 +469,9 @@ export const OrderManagementPage: React.FC = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-5xl shadow-2xl">
-            <div className="flex items-center gap-3 mb-4">
-              <Package size={24} className="text-blue-600" />
-              <h3 className="text-base font-bold text-slate-900">
-                Buat Delivery Order Baru
-              </h3>
-            </div>
-
+            <h3 className="text-base font-bold text-slate-900 mb-4">
+              Buat Delivery Order Baru
+            </h3>
             <form onSubmit={handleCreateOrder} className="space-y-3 text-xs">
               <div className="grid grid-cols-4 gap-3">
                 <div>
@@ -642,44 +491,17 @@ export const OrderManagementPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
-                    <div className="flex items-center">
-                      <span>Customer Reference</span>
-                      <Search
-                        size={16}
-                        className="ml-2 text-slate-400 cursor-pointer"
-                        onClick={() =>
-                          setShowSearchCustomerReference(
-                            !showSearchCustomerReference,
-                          )
-                        }
-                      />
-                    </div>
+                    Customer Reference
                   </label>
-                  {showSearchCustomerReference && (
-                    <input
-                      type="text"
-                      placeholder="Cari..."
-                      value={searchCustomerReference}
-                      onChange={(e) =>
-                        setSearchCustomerReference(e.target.value)
-                      }
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-1"
-                    />
-                  )}
-                  <select
+                  <input
+                    type="text"
+                    placeholder="e.g. 123456"
                     value={newOrder.customerRef}
                     onChange={(e) =>
                       setNewOrder({ ...newOrder, customerRef: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
-                  >
-                    {filteredCustomerReferences.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
@@ -700,9 +522,9 @@ export const OrderManagementPage: React.FC = () => {
                     Vehicle Types
                   </label>
                   <select
-                    value={newOrder.vehicleType}
+                    value={newOrder.vehiclePlate}
                     onChange={(e) =>
-                      setNewOrder({ ...newOrder, vehicleType: e.target.value })
+                      setNewOrder({ ...newOrder, vehiclePlate: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
                   >
@@ -712,7 +534,7 @@ export const OrderManagementPage: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
                     <div className="flex items-center">
@@ -741,7 +563,7 @@ export const OrderManagementPage: React.FC = () => {
                       setNewOrder({ ...newOrder, procedure: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
+                    size={5}
                   >
                     {filteredProcedures.map((p) => (
                       <option key={p} value={p}>
@@ -753,7 +575,7 @@ export const OrderManagementPage: React.FC = () => {
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
                     <div className="flex items-center">
-                      <span>Payment Terms</span>
+                      <span>Payment Term</span>
                       <Search
                         size={16}
                         className="ml-2 text-slate-400 cursor-pointer"
@@ -778,7 +600,7 @@ export const OrderManagementPage: React.FC = () => {
                       setNewOrder({ ...newOrder, paymentTerm: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
+                    size={5}
                   >
                     {filteredPaymentTerms.map((p) => (
                       <option key={p} value={p}>
@@ -787,6 +609,9 @@ export const OrderManagementPage: React.FC = () => {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
                     <div className="flex items-center">
@@ -813,7 +638,7 @@ export const OrderManagementPage: React.FC = () => {
                       setNewOrder({ ...newOrder, origin: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
+                    size={5}
                   >
                     {filteredOrigins.map((o) => (
                       <option key={o} value={o}>
@@ -850,7 +675,7 @@ export const OrderManagementPage: React.FC = () => {
                       setNewOrder({ ...newOrder, destination: e.target.value })
                     }
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
+                    size={5}
                   >
                     {filteredDestinations.map((d) => (
                       <option key={d} value={d}>
@@ -861,144 +686,49 @@ export const OrderManagementPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
-                    <div className="flex items-center">
-                      <span>Items</span>
-                      <Search
-                        size={16}
-                        className="ml-2 text-slate-400 cursor-pointer"
-                        onClick={() => setShowSearchItem(!showSearchItem)}
-                      />
-                    </div>
-                  </label>
-                  {showSearchItem && (
-                    <input
-                      type="text"
-                      placeholder="Cari..."
-                      value={searchItem}
-                      onChange={(e) => setSearchItem(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-1"
-                    />
-                  )}
-                  <select
-                    value={newOrder.item}
-                    onChange={(e) =>
-                      setNewOrder({ ...newOrder, item: e.target.value })
-                    }
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                    size={1}
-                  >
-                    {filteredItems.map((i) => (
-                      <option key={i} value={i}>
-                        {i}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
                     Quantity
                   </label>
                   <input
-                    type="text"
-                    required
-                    placeholder="e.g. PT. Indonesia Makmur"
+                    type="number"
                     value={newOrder.quantity}
                     onChange={(e) =>
                       setNewOrder({
                         ...newOrder,
-                        quantity: e.target.value,
+                        quantity: parseInt(e.target.value),
                       })
                     }
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
                   />
                 </div>
                 <div>
-                  <div>
-                    <label className="block text-slate-600 font-semibold mb-1">
-                      <div className="flex items-center">
-                        <span>Satuan</span>
-                        <Search
-                          size={16}
-                          className="ml-2 text-slate-400 cursor-pointer"
-                          onClick={() => setShowSearchUnit(!showSearchUnit)}
-                        />
-                      </div>
-                    </label>
-                    {showSearchUnit && (
-                      <input
-                        type="text"
-                        placeholder="Cari..."
-                        value={searchUnit}
-                        onChange={(e) => setSearchUnit(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-1"
-                      />
-                    )}
-                    <select
-                      value={newOrder.item}
-                      onChange={(e) =>
-                        setNewOrder({ ...newOrder, unit: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
-                      size={1}
-                    >
-                      {filteredUnits.map((i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div>
                   <label className="block text-slate-600 font-semibold mb-1">
-                    Jumlah
+                    Jumlah Bayar
                   </label>
                   <input
-                    type="text"
-                    required
-                    placeholder="e.g. PT. Indonesia Makmur"
+                    type="number"
                     value={newOrder.jumlahBayar}
                     onChange={(e) =>
                       setNewOrder({
                         ...newOrder,
-                        jumlahBayar: e.target.value,
+                        jumlahBayar: parseInt(e.target.value),
                       })
                     }
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
-                    Deskripsi
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. PT. Indonesia Makmur"
-                    value={newOrder.deskripsi}
-                    onChange={(e) =>
-                      setNewOrder({
-                        ...newOrder,
-                        deskripsi: e.target.value,
-                      })
-                    }
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5"
                   />
                 </div>
                 <div>
                   <label className="block text-slate-600 font-semibold mb-1">
-                    Total Harga (Rp)
+                    Total (Rp)
                   </label>
                   <div className="w-full bg-slate-100 border border-slate-300 rounded-lg p-2.5">
                     {newOrder.revenue.toLocaleString("id-ID")}
                   </div>
                 </div>
               </div>
+
               <div className="flex items-center justify-end gap-2 pt-4">
                 <button
                   type="button"

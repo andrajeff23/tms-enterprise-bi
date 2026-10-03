@@ -1,29 +1,30 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useSelector } from "react-redux";
-import type { RootState } from '../../lib/store';
-import { useNavigationStore } from '../../lib/store/useNavigationStore';
-import { Footer } from '../common/Footer';
-import { Sidebar } from '../common/Sidebar';
-import { Topbar } from '../common/Topbar';
-import { AnalyticsPage } from '../../../features/dashboard/pages/analytics.page';
-import { DashboardPage } from '../../../features/dashboard/pages/dashboard.page';
-import { DeliveryOrderPage } from '../../../features/operational/pages/delivery-order.page';
-import { FinancePage } from '../../../features/finance/pages/finance.page';
-import { FleetManagementPage } from '../../../features/operational/pages/fleet-management.page';
-import { MaintenancePage } from '../../../features/operational/pages/maintenance.page';
-import { MasterDataPage } from '../../../features/masterData/pages/master-data.page';
-import { OrderManagementPage } from '../../../features/operational/pages/order-management.page';
-import { PenagihanPage } from '../../../features/finance/pages/penagihan.page';
-import { PaymentPage } from '../../../features/finance/pages/payment.page';
-import { PlannerPage } from '../../../features/operational/pages/planner-assignment.page';
-import { PODPage } from '../../../features/operational/pages/pod.page';
-import { ReportsPage } from '../../../features/system/pages/reports.page';
-import { SystemPage } from '../../../features/system/pages/system.page';
-import { TrackingPage } from '../../../features/operational/pages/tracking.page';
-import { UangJalanPage } from '../../../features/operational/pages/uang-jalan.page';
-import { UnitRusakPage } from '../../../features/operational/pages/unit-rusak.page';
-import { VehiclePage } from '../../../features/masterData/pages/vehicle.page';
+import HistoryPerjalananPage from "../../../features/customer/pages/history-perjalanan.page";
+import StatusPerjalananPage from "../../../features/customer/pages/status-perjalanan.page";
+import { AnalyticsPage } from "../../../features/dashboard/pages/analytics.page";
+import { DashboardPage } from "../../../features/dashboard/pages/dashboard.page";
+import { FinancePage } from "../../../features/finance/pages/finance.page";
+import { PaymentPage } from "../../../features/finance/pages/payment.page";
+import { PenagihanPage } from "../../../features/finance/pages/penagihan.page";
+import { CustomerPage } from "../../../features/masterData/pages/customer.page";
+import { DriverPage } from "../../../features/masterData/pages/driver.page";
+import { MasterDataPage } from "../../../features/masterData/pages/master-data.page";
+import { VehiclePage } from "../../../features/masterData/pages/vehicle.page";
+import { DeliveryOrderPage } from "../../../features/operational/pages/delivery-order.page";
+import { FleetManagementPage } from "../../../features/operational/pages/fleet-management.page";
+import { MaintenancePage } from "../../../features/operational/pages/maintenance.page";
+import { OrderManagementPage } from "../../../features/operational/pages/order-management.page";
+import { PODPage } from "../../../features/operational/pages/pod.page";
+import { TrackingPage } from "../../../features/operational/pages/tracking.page";
+import { UangJalanPage } from "../../../features/operational/pages/uang-jalan.page";
+import { UnitRusakPage } from "../../../features/operational/pages/unit-rusak.page";
+import { ReportsPage } from "../../../features/system/pages/reports.page";
+import { SystemPage } from "../../../features/system/pages/system.page";
+import { useNavigationStore } from "../../lib/store/useNavigationStore";
+import { Footer } from "../common/Footer";
+import { Sidebar } from "../common/Sidebar";
+import { Topbar } from "../common/Topbar";
 
 export const MainLayout: React.FC = () => {
   const { activeTab } = useNavigationStore();
@@ -39,12 +40,18 @@ export const MainLayout: React.FC = () => {
       case "order-management":
         return {
           title: "Order Management",
-          subtitle: "Kelola daftar pengiriman, penugasan armada, dan status order",
+          subtitle:
+            "Kelola daftar pengiriman, penugasan armada, dan status order",
         };
       case "planner":
         return {
           title: "Planner & Penugasan",
           subtitle: "Rencanakan jadwal trip dan penugasan driver & armada",
+        };
+      case "time-line-customer":
+        return {
+          title: "Status Perjalanan",
+          subtitle: "Status perjalanan customer dan history order",
         };
       case "delivery-order":
         return {
@@ -54,7 +61,8 @@ export const MainLayout: React.FC = () => {
       case "uang-jalan":
         return {
           title: "Uang Jalan Driver",
-          subtitle: "Pencairan, klaim biaya perjalanan, dan penyelesaian uang jalan",
+          subtitle:
+            "Pencairan, klaim biaya perjalanan, dan penyelesaian uang jalan",
         };
       case "pod":
         return {
@@ -74,12 +82,14 @@ export const MainLayout: React.FC = () => {
       case "maintenance":
         return {
           title: "Maintenance & Work Order",
-          subtitle: "Jadwal servis, perbaikan kendaraan, dan work order mekanik",
+          subtitle:
+            "Jadwal servis, perbaikan kendaraan, dan work order mekanik",
         };
       case "unit-rusak":
         return {
           title: "Unit Rusak & Darurat",
-          subtitle: "Laporan kerusakan, tingkat keparahan, dan progress perbaikan",
+          subtitle:
+            "Laporan kerusakan, tingkat keparahan, dan progress perbaikan",
         };
       case "invoice":
         return {
@@ -101,15 +111,21 @@ export const MainLayout: React.FC = () => {
           title: "Master Data All",
           subtitle: "Database customer, PIC, dan histori transaksi",
         };
+      case "customer":
+        return {
+          title: "Data Customer",
+          subtitle: "Database customer, PIC, dan histori transaksi",
+        };
       case "driver":
         return {
-          title: "Master Data Driver",
+          title: "Data Driver",
           subtitle: "Profil pengemudi, SIM, dan performa driver",
         };
       case "vehicle":
         return {
-          title: "Master Data Kendaraan",
-          subtitle: "Inventarisasi armada, spesifikasi teknis, dan dokumen kendaraan",
+          title: "Data Kendaraan",
+          subtitle:
+            "Inventarisasi armada, spesifikasi teknis, dan dokumen kendaraan",
         };
       case "tarif":
         return {
@@ -124,7 +140,8 @@ export const MainLayout: React.FC = () => {
       case "analytics":
         return {
           title: "Analytics & AI Predictive",
-          subtitle: "Rekomendasi kecerdasan buatan untuk efisiensi rute & armada",
+          subtitle:
+            "Rekomendasi kecerdasan buatan untuk efisiensi rute & armada",
         };
       case "settings":
       case "user-management":
@@ -148,12 +165,16 @@ export const MainLayout: React.FC = () => {
         return <DashboardPage />;
       case "order-management":
         return <OrderManagementPage />;
-      case "planner":
-        return <PlannerPage />;
+      case "customer":
+        return <CustomerPage />;
       case "delivery-order":
         return <DeliveryOrderPage />;
       case "uang-jalan":
         return <UangJalanPage />;
+      case "time-line-customer":
+        return <StatusPerjalananPage />;
+      case "history-perjalanan":
+        return <HistoryPerjalananPage />;
       case "pod":
         return <PODPage />;
       case "tracking":
@@ -172,6 +193,8 @@ export const MainLayout: React.FC = () => {
         return <PenagihanPage />;
       case "master-data":
         return <MasterDataPage />;
+      case "driver":
+        return <DriverPage />;
       case "vehicle":
         return <VehiclePage />;
       case "reports":

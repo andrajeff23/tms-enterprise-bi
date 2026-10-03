@@ -1,4 +1,4 @@
-import Swal from 'sweetalert2';
+
 import React, { useState } from 'react';
 import {
   Settings, ShieldCheck, Plus, Search, Edit2, Trash2,
@@ -6,72 +6,15 @@ import {
   AlertTriangle, Activity, Database, Server, Globe
 , ChevronLeft, ChevronRight } from 'lucide-react';
 
-type UserRole = 'SUPER_ADMIN' | 'LOGISTICS_MANAGER' | 'DISPATCHER' | 'FINANCE_MANAGER' | 'DRIVER_SUPERVISOR' | 'MECHANIC' | 'VIEWER';
-type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
-
-interface SystemUser {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  phone: string;
-  department: string;
-  lastLogin: string;
-  status: UserStatus;
-  permissions: string[];
-  createdDate: string;
-}
-
-const systemUsers: SystemUser[] = [
-  { id: 'USR-001', name: 'Administrator System', email: 'admin@tmsbi.co.id', role: 'SUPER_ADMIN', phone: '0812-1234-0001', department: 'IT & System', lastLogin: '2026-09-03 09:45', status: 'ACTIVE', permissions: ['ALL'], createdDate: '2024-01-01' },
-  { id: 'USR-002', name: 'Budi Hartono', email: 'budi.logistics@tmsbi.co.id', role: 'LOGISTICS_MANAGER', phone: '0812-1234-0002', department: 'Operations', lastLogin: '2026-09-03 08:30', status: 'ACTIVE', permissions: ['order', 'fleet', 'driver', 'planner', 'tracking'], createdDate: '2024-02-15' },
-  { id: 'USR-003', name: 'Rina Dispatcher', email: 'rina.dispatch@tmsbi.co.id', role: 'DISPATCHER', phone: '0812-1234-0003', department: 'Operations', lastLogin: '2026-09-03 07:00', status: 'ACTIVE', permissions: ['order', 'planner', 'delivery-order', 'tracking'], createdDate: '2024-03-10' },
-  { id: 'USR-004', name: 'Siti Rahayu', email: 'siti.finance@tmsbi.co.id', role: 'FINANCE_MANAGER', phone: '0812-1234-0004', department: 'Finance', lastLogin: '2026-09-03 09:00', status: 'ACTIVE', permissions: ['invoice', 'payment', 'penagihan', 'reports'], createdDate: '2024-01-20' },
-  { id: 'USR-005', name: 'Agus Supervisor', email: 'agus.driver@tmsbi.co.id', role: 'DRIVER_SUPERVISOR', phone: '0812-1234-0005', department: 'Operations', lastLogin: '2026-09-02 18:00', status: 'ACTIVE', permissions: ['driver', 'tracking', 'pod', 'uang-jalan'], createdDate: '2024-04-05' },
-  { id: 'USR-006', name: 'Joko Mekanik', email: 'joko.workshop@tmsbi.co.id', role: 'MECHANIC', phone: '0812-1234-0006', department: 'Workshop', lastLogin: '2026-09-03 06:30', status: 'ACTIVE', permissions: ['maintenance', 'unit-rusak', 'fleet-management'], createdDate: '2024-05-12' },
-  { id: 'USR-007', name: 'Dewi Putri', email: 'dewi.ops@tmsbi.co.id', role: 'VIEWER', phone: '0812-1234-0007', department: 'Management', lastLogin: '2026-09-01 14:00', status: 'ACTIVE', permissions: ['dashboard', 'reports', 'analytics'], createdDate: '2024-06-01' },
-  { id: 'USR-008', name: 'Hendra Lama', email: 'hendra.old@tmsbi.co.id', role: 'DISPATCHER', phone: '0812-1234-0008', department: 'Operations', lastLogin: '2026-07-15 09:00', status: 'INACTIVE', permissions: ['order', 'planner'], createdDate: '2023-09-10' },
-];
-
-const auditLogs = [
-  { id: 'LOG-001', user: 'admin@tmsbi.co.id', action: 'LOGIN', target: 'System', time: '2026-09-03 09:45:12', ip: '192.168.1.100', status: 'SUCCESS' },
-  { id: 'LOG-002', user: 'budi.logistics@tmsbi.co.id', action: 'CREATE_ORDER', target: 'DO-2026-09010', time: '2026-09-03 09:30:44', ip: '192.168.1.105', status: 'SUCCESS' },
-  { id: 'LOG-003', user: 'siti.finance@tmsbi.co.id', action: 'APPROVE_PAYMENT', target: 'PAY-2026-09003', time: '2026-09-03 09:15:22', ip: '192.168.1.110', status: 'SUCCESS' },
-  { id: 'LOG-004', user: 'rina.dispatch@tmsbi.co.id', action: 'UPDATE_TRIP', target: 'TRIP-2026-0902', time: '2026-09-03 08:55:08', ip: '192.168.1.102', status: 'SUCCESS' },
-  { id: 'LOG-005', user: 'unknown@external.com', action: 'LOGIN', target: 'System', time: '2026-09-03 08:44:01', ip: '203.45.67.89', status: 'FAILED' },
-  { id: 'LOG-006', user: 'admin@tmsbi.co.id', action: 'DELETE_USER', target: 'USR-009', time: '2026-09-03 08:30:15', ip: '192.168.1.100', status: 'SUCCESS' },
-  { id: 'LOG-007', user: 'joko.workshop@tmsbi.co.id', action: 'CREATE_WORKORDER', target: 'WO-2026-09009', time: '2026-09-03 07:00:33', ip: '192.168.1.120', status: 'SUCCESS' },
-  { id: 'LOG-008', user: 'agus.driver@tmsbi.co.id', action: 'VERIFY_POD', target: 'POD-2026-09002', time: '2026-09-03 06:55:41', ip: '192.168.1.115', status: 'SUCCESS' },
-];
-
-const systemStatus = [
-  { name: 'API Server', status: 'ONLINE', uptime: '99.98%', latency: '12ms' },
-  { name: 'Database PostgreSQL', status: 'ONLINE', uptime: '99.95%', latency: '5ms' },
-  { name: 'GPS Tracking Service', status: 'ONLINE', uptime: '99.90%', latency: '45ms' },
-  { name: 'AI Analytics Engine', status: 'ONLINE', uptime: '99.85%', latency: '120ms' },
-  { name: 'Email Notification', status: 'ONLINE', uptime: '100%', latency: '230ms' },
-  { name: 'WhatsApp Gateway', status: 'DEGRADED', uptime: '98.20%', latency: '850ms' },
-];
-
-const roleColors: Record<UserRole, string> = {
-  SUPER_ADMIN: 'bg-rose-100 text-rose-700',
-  LOGISTICS_MANAGER: 'bg-blue-100 text-blue-700',
-  DISPATCHER: 'bg-indigo-100 text-indigo-700',
-  FINANCE_MANAGER: 'bg-emerald-100 text-emerald-700',
-  DRIVER_SUPERVISOR: 'bg-amber-100 text-amber-700',
-  MECHANIC: 'bg-orange-100 text-orange-700',
-  VIEWER: 'bg-slate-100 text-slate-600',
-};
-
-const roleLabels: Record<UserRole, string> = {
-  SUPER_ADMIN: 'Super Admin',
-  LOGISTICS_MANAGER: 'Logistics Manager',
-  DISPATCHER: 'Dispatcher',
-  FINANCE_MANAGER: 'Finance Manager',
-  DRIVER_SUPERVISOR: 'Driver Supervisor',
-  MECHANIC: 'Mechanic',
-  VIEWER: 'Viewer',
-};
+import { UserRole, UserStatus, SystemUser } from '../../../shared/types/system.type';
+import { 
+  SYSTEM_USERS as systemUsers, 
+  AUDIT_LOGS as auditLogs, 
+  SYSTEM_STATUS as systemStatus, 
+  ROLE_COLORS as roleColors, 
+  ROLE_LABELS as roleLabels 
+} from '../../../shared/constants/system.const';
+import { showInfoAlert, showSuccessAlert } from '../../../shared/utils/alert.util';
 
 export const SystemPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'system'>('users');
@@ -243,10 +186,10 @@ export const SystemPage: React.FC = () => {
                     <td className="p-3.5">{statusBadge(u.status)}</td>
                     <td className="p-3.5">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Edit user: ${u.name}`})} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={13} /></button>
-                        <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Reset password: ${u.email}`})} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"><Key size={13} /></button>
+                        <button onClick={() => showInfoAlert('Informasi', `Edit user: ${u.name}`)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={13} /></button>
+                        <button onClick={() => showInfoAlert('Informasi', `Reset password: ${u.email}`)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"><Key size={13} /></button>
                         {u.role !== 'SUPER_ADMIN' && (
-                          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: `Toggle status user: ${u.name}`})} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors">
+                          <button onClick={() => showInfoAlert('Informasi', `Toggle status user: ${u.name}`)} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors">
                             {u.status === 'ACTIVE' ? <Lock size={13} /> : <CheckCircle size={13} />}
                           </button>
                         )}
@@ -272,7 +215,7 @@ export const SystemPage: React.FC = () => {
               <span className="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <AlertTriangle size={9} /> {auditLogs.filter(l => l.status === 'FAILED').length} Failed Login
               </span>
-              <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export audit log'})} className="text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded-lg">Export</button>
+              <button onClick={() => showInfoAlert('Informasi', 'Export audit log')} className="text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded-lg">Export</button>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -409,7 +352,7 @@ export const SystemPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Batal</button>
-                <button onClick={() => { setShowModal(false); Swal.fire({icon: 'success', title: 'Informasi', text: 'Pengguna baru berhasil ditambahkan! Email aktivasi telah dikirim.'}); }} className="px-4 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 text-xs">Buat Pengguna</button>
+                <button onClick={() => { setShowModal(false); showSuccessAlert('Berhasil', 'Pengguna baru berhasil ditambahkan! Email aktivasi telah dikirim.'); }} className="px-4 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 text-xs">Buat Pengguna</button>
               </div>
             </div>
           </div>

@@ -1,11 +1,29 @@
-import Swal from 'sweetalert2';
-import React, { useState } from 'react';
+import dayjs from "dayjs";
 import {
-  FileCheck2, Search, Download, CheckCircle, Clock,
-  AlertCircle, XCircle, Eye, Camera, Upload, Star
-, ChevronLeft, ChevronRight } from 'lucide-react';
+  AlertCircle,
+  Camera,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  Eye,
+  FileCheck2,
+  Search,
+  Star,
+  Upload,
+  XCircle,
+} from "lucide-react";
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import Swal from "sweetalert2";
 
-type PODStatus = 'PENDING_UPLOAD' | 'UPLOADED' | 'VERIFIED' | 'DISPUTED' | 'REJECTED';
+type PODStatus =
+  | "PENDING_UPLOAD"
+  | "UPLOADED"
+  | "VERIFIED"
+  | "DISPUTED"
+  | "REJECTED";
 
 interface PODRecord {
   id: string;
@@ -17,27 +35,162 @@ interface PODRecord {
   uploadDate: string;
   receivedBy: string;
   receiverTitle: string;
-  signatureStatus: 'SIGNED' | 'UNSIGNED' | 'DIGITAL';
+  signatureStatus: "SIGNED" | "UNSIGNED" | "DIGITAL";
   photoCount: number;
   status: PODStatus;
   note: string;
-  condition: 'GOOD' | 'PARTIAL' | 'DAMAGED';
+  condition: "GOOD" | "PARTIAL" | "DAMAGED";
 }
 
 const dummyPODs: PODRecord[] = [
-  { id: '1', podNo: 'POD-2026-09001', doRef: 'DO-2026-09001', driverName: 'Slamet Rahardjo', customerName: 'PT. ABC Indonesia', deliveryDate: '2026-09-04', uploadDate: '2026-09-04', receivedBy: 'Budi Santoso', receiverTitle: 'Kepala Gudang', signatureStatus: 'SIGNED', photoCount: 4, status: 'VERIFIED', note: 'Semua barang diterima dalam kondisi baik', condition: 'GOOD' },
-  { id: '2', podNo: 'POD-2026-09002', doRef: 'DO-2026-09002', driverName: 'Budi Kurniawan', customerName: 'PT. XYZ Nusantara', deliveryDate: '2026-09-05', uploadDate: '2026-09-05', receivedBy: 'Dewi Rahayu', receiverTitle: 'Staff Penerimaan', signatureStatus: 'DIGITAL', photoCount: 3, status: 'UPLOADED', note: '2 roll kain lecek kecil, sisanya OK', condition: 'PARTIAL' },
-  { id: '3', podNo: 'POD-2026-09003', doRef: 'DO-2026-09003', driverName: 'Andi Saputra', customerName: 'PT. Maju Bersama', deliveryDate: '2026-09-03', uploadDate: '2026-09-03', receivedBy: 'Hendra Wijaya', receiverTitle: 'Manajer Logistik', signatureStatus: 'SIGNED', photoCount: 5, status: 'VERIFIED', note: 'Diterima lengkap dan tepat waktu', condition: 'GOOD' },
-  { id: '4', podNo: 'POD-2026-09004', doRef: 'DO-2026-09004', driverName: 'Hendra Gunawan', customerName: 'PT. Sukses Makmur', deliveryDate: '-', uploadDate: '-', receivedBy: '-', receiverTitle: '-', signatureStatus: 'UNSIGNED', photoCount: 0, status: 'PENDING_UPLOAD', note: 'Dalam perjalanan ke Balikpapan', condition: 'GOOD' },
-  { id: '5', podNo: 'POD-2026-09005', doRef: 'DO-2026-09005', driverName: 'Dedi Setiawan', customerName: 'PT. Sejahtera Abadi', deliveryDate: '-', uploadDate: '-', receivedBy: '-', receiverTitle: '-', signatureStatus: 'UNSIGNED', photoCount: 0, status: 'PENDING_UPLOAD', note: 'Menunggu konfirmasi lokasi', condition: 'GOOD' },
-  { id: '6', podNo: 'POD-2026-09006', doRef: 'DO-2026-09006', driverName: 'Rudi Hermawan', customerName: 'PT. Nusantara Jaya', deliveryDate: '2026-09-04', uploadDate: '2026-09-05', receivedBy: 'Eko Purnama', receiverTitle: 'Supervisor Gudang', signatureStatus: 'SIGNED', photoCount: 6, status: 'VERIFIED', note: 'Serah terima berjalan lancar', condition: 'GOOD' },
-  { id: '7', podNo: 'POD-2026-09007', doRef: 'DO-2026-09007', driverName: 'Eko Prasetyo', customerName: 'PT. Pangan Nusantara', deliveryDate: '2026-09-04', uploadDate: '2026-09-04', receivedBy: 'Ahmad Fauzi', receiverTitle: 'Kepala Divisi Logistik', signatureStatus: 'DIGITAL', photoCount: 7, status: 'UPLOADED', note: 'Pending verifikasi final', condition: 'GOOD' },
-  { id: '8', podNo: 'POD-2026-09008', doRef: 'DO-2026-09008', driverName: 'Agus Wijaya', customerName: 'PT. Motor Bersama', deliveryDate: '2026-09-02', uploadDate: '2026-09-02', receivedBy: '-', receiverTitle: '-', signatureStatus: 'UNSIGNED', photoCount: 2, status: 'DISPUTED', note: '3 karton spare part dalam kondisi rusak/penyok - klaim asuransi diajukan', condition: 'DAMAGED' },
-  { id: '9', podNo: 'POD-2026-09009', doRef: 'DO-2026-09009', driverName: 'Firman Wibowo', customerName: 'PT. Mitra Logistik', deliveryDate: '2026-09-05', uploadDate: '2026-09-05', receivedBy: 'Sari Dewi', receiverTitle: 'Admin Gudang', signatureStatus: 'SIGNED', photoCount: 3, status: 'REJECTED', note: 'Foto bukti tidak jelas, diminta upload ulang', condition: 'GOOD' },
+  {
+    id: "1",
+    podNo: "POD-2026-09001",
+    doRef: "DO-2026-09001",
+    driverName: "Slamet Rahardjo",
+    customerName: "PT. ABC Indonesia",
+    deliveryDate: "2026-09-04",
+    uploadDate: "2026-09-04",
+    receivedBy: "Budi Santoso",
+    receiverTitle: "Kepala Gudang",
+    signatureStatus: "SIGNED",
+    photoCount: 4,
+    status: "VERIFIED",
+    note: "Semua barang diterima dalam kondisi baik",
+    condition: "GOOD",
+  },
+  {
+    id: "2",
+    podNo: "POD-2026-09002",
+    doRef: "DO-2026-09002",
+    driverName: "Budi Kurniawan",
+    customerName: "PT. XYZ Nusantara",
+    deliveryDate: "2026-09-05",
+    uploadDate: "2026-09-05",
+    receivedBy: "Dewi Rahayu",
+    receiverTitle: "Staff Penerimaan",
+    signatureStatus: "DIGITAL",
+    photoCount: 3,
+    status: "UPLOADED",
+    note: "2 roll kain lecek kecil, sisanya OK",
+    condition: "PARTIAL",
+  },
+  {
+    id: "3",
+    podNo: "POD-2026-09003",
+    doRef: "DO-2026-09003",
+    driverName: "Andi Saputra",
+    customerName: "PT. Maju Bersama",
+    deliveryDate: "2026-09-03",
+    uploadDate: "2026-09-03",
+    receivedBy: "Hendra Wijaya",
+    receiverTitle: "Manajer Logistik",
+    signatureStatus: "SIGNED",
+    photoCount: 5,
+    status: "VERIFIED",
+    note: "Diterima lengkap dan tepat waktu",
+    condition: "GOOD",
+  },
+  {
+    id: "4",
+    podNo: "POD-2026-09004",
+    doRef: "DO-2026-09004",
+    driverName: "Hendra Gunawan",
+    customerName: "PT. Sukses Makmur",
+    deliveryDate: "-",
+    uploadDate: "-",
+    receivedBy: "-",
+    receiverTitle: "-",
+    signatureStatus: "UNSIGNED",
+    photoCount: 0,
+    status: "PENDING_UPLOAD",
+    note: "Dalam perjalanan ke Balikpapan",
+    condition: "GOOD",
+  },
+  {
+    id: "5",
+    podNo: "POD-2026-09005",
+    doRef: "DO-2026-09005",
+    driverName: "Dedi Setiawan",
+    customerName: "PT. Sejahtera Abadi",
+    deliveryDate: "-",
+    uploadDate: "-",
+    receivedBy: "-",
+    receiverTitle: "-",
+    signatureStatus: "UNSIGNED",
+    photoCount: 0,
+    status: "PENDING_UPLOAD",
+    note: "Menunggu konfirmasi lokasi",
+    condition: "GOOD",
+  },
+  {
+    id: "6",
+    podNo: "POD-2026-09006",
+    doRef: "DO-2026-09006",
+    driverName: "Rudi Hermawan",
+    customerName: "PT. Nusantara Jaya",
+    deliveryDate: "2026-09-04",
+    uploadDate: "2026-09-05",
+    receivedBy: "Eko Purnama",
+    receiverTitle: "Supervisor Gudang",
+    signatureStatus: "SIGNED",
+    photoCount: 6,
+    status: "VERIFIED",
+    note: "Serah terima berjalan lancar",
+    condition: "GOOD",
+  },
+  {
+    id: "7",
+    podNo: "POD-2026-09007",
+    doRef: "DO-2026-09007",
+    driverName: "Eko Prasetyo",
+    customerName: "PT. Pangan Nusantara",
+    deliveryDate: "2026-09-04",
+    uploadDate: "2026-09-04",
+    receivedBy: "Ahmad Fauzi",
+    receiverTitle: "Kepala Divisi Logistik",
+    signatureStatus: "DIGITAL",
+    photoCount: 7,
+    status: "UPLOADED",
+    note: "Pending verifikasi final",
+    condition: "GOOD",
+  },
+  {
+    id: "8",
+    podNo: "POD-2026-09008",
+    doRef: "DO-2026-09008",
+    driverName: "Agus Wijaya",
+    customerName: "PT. Motor Bersama",
+    deliveryDate: "2026-09-02",
+    uploadDate: "2026-09-02",
+    receivedBy: "-",
+    receiverTitle: "-",
+    signatureStatus: "UNSIGNED",
+    photoCount: 2,
+    status: "DISPUTED",
+    note: "3 karton spare part dalam kondisi rusak/penyok - klaim asuransi diajukan",
+    condition: "DAMAGED",
+  },
+  {
+    id: "9",
+    podNo: "POD-2026-09009",
+    doRef: "DO-2026-09009",
+    driverName: "Firman Wibowo",
+    customerName: "PT. Mitra Logistik",
+    deliveryDate: "2026-09-05",
+    uploadDate: "2026-09-05",
+    receivedBy: "Sari Dewi",
+    receiverTitle: "Admin Gudang",
+    signatureStatus: "SIGNED",
+    photoCount: 3,
+    status: "REJECTED",
+    note: "Foto bukti tidak jelas, diminta upload ulang",
+    condition: "GOOD",
+  },
 ];
 
 export const PODPage: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -47,11 +200,20 @@ export const PODPage: React.FC = () => {
     return (
       <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
         <div className="text-xs text-slate-500 font-medium">
-          Menampilkan <span className="font-bold text-slate-800">{dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * itemsPerPage, dataLength)}</span> dari <span className="font-bold text-slate-800">{dataLength}</span> data
+          Menampilkan{" "}
+          <span className="font-bold text-slate-800">
+            {dataLength === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+          </span>{" "}
+          -{" "}
+          <span className="font-bold text-slate-800">
+            {Math.min(currentPage * itemsPerPage, dataLength)}
+          </span>{" "}
+          dari <span className="font-bold text-slate-800">{dataLength}</span>{" "}
+          data
         </div>
         <div className="flex items-center gap-1">
-          <button 
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
           >
@@ -69,9 +231,9 @@ export const PODPage: React.FC = () => {
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-7 h-7 rounded-md text-xs font-bold transition-colors ${
-                    currentPage === pageNum 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-600 hover:bg-slate-200'
+                    currentPage === pageNum
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-600 hover:bg-slate-200"
                   }`}
                 >
                   {pageNum}
@@ -79,8 +241,8 @@ export const PODPage: React.FC = () => {
               );
             })}
           </div>
-          <button 
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-200 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
           >
@@ -91,48 +253,134 @@ export const PODPage: React.FC = () => {
     );
   };
 
-  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState("ALL");
   const [selectedPOD, setSelectedPOD] = useState<PODRecord | null>(null);
+  const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
+  const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
 
   const statusBadge = (s: PODStatus) => {
-    const map: Record<PODStatus, { cls: string; icon: React.ReactNode; label: string }> = {
-      PENDING_UPLOAD: { cls: 'bg-slate-100 text-slate-600', icon: <Clock size={11} />, label: 'Menunggu Upload' },
-      UPLOADED: { cls: 'bg-amber-100 text-amber-700', icon: <Upload size={11} />, label: 'Sudah Upload' },
-      VERIFIED: { cls: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle size={11} />, label: 'Terverifikasi' },
-      DISPUTED: { cls: 'bg-orange-100 text-orange-700', icon: <AlertCircle size={11} />, label: 'Sengketa' },
-      REJECTED: { cls: 'bg-rose-100 text-rose-700', icon: <XCircle size={11} />, label: 'Ditolak' },
+    const map: Record<
+      PODStatus,
+      { cls: string; icon: React.ReactNode; label: string }
+    > = {
+      PENDING_UPLOAD: {
+        cls: "bg-slate-100 text-slate-600",
+        icon: <Clock size={11} />,
+        label: "Menunggu Upload",
+      },
+      UPLOADED: {
+        cls: "bg-amber-100 text-amber-700",
+        icon: <Upload size={11} />,
+        label: "Sudah Upload",
+      },
+      VERIFIED: {
+        cls: "bg-emerald-100 text-emerald-700",
+        icon: <CheckCircle size={11} />,
+        label: "Terverifikasi",
+      },
+      DISPUTED: {
+        cls: "bg-orange-100 text-orange-700",
+        icon: <AlertCircle size={11} />,
+        label: "Sengketa",
+      },
+      REJECTED: {
+        cls: "bg-rose-100 text-rose-700",
+        icon: <XCircle size={11} />,
+        label: "Ditolak",
+      },
     };
     const d = map[s];
     return (
-      <span className={`${d.cls} px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-fit`}>
+      <span
+        className={`${d.cls} px-2.5 py-1 rounded-full font-bold text-[11px] flex items-center gap-1 w-fit`}
+      >
         {d.icon} {d.label}
       </span>
     );
   };
 
-  const conditionBadge = (c: PODRecord['condition']) => {
-    if (c === 'GOOD') return <span className="bg-emerald-50 text-emerald-700 font-bold text-[10px] px-2 py-0.5 rounded">✓ Baik</span>;
-    if (c === 'PARTIAL') return <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">⚠ Sebagian</span>;
-    return <span className="bg-rose-50 text-rose-700 font-bold text-[10px] px-2 py-0.5 rounded">✗ Rusak</span>;
+  const conditionBadge = (c: PODRecord["condition"]) => {
+    if (c === "GOOD")
+      return (
+        <span className="bg-emerald-50 text-emerald-700 font-bold text-[10px] px-2 py-0.5 rounded">
+          ✓ Baik
+        </span>
+      );
+    if (c === "PARTIAL")
+      return (
+        <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2 py-0.5 rounded">
+          ⚠ Sebagian
+        </span>
+      );
+    return (
+      <span className="bg-rose-50 text-rose-700 font-bold text-[10px] px-2 py-0.5 rounded">
+        ✗ Rusak
+      </span>
+    );
   };
 
-  const signBadge = (s: PODRecord['signatureStatus']) => {
-    if (s === 'SIGNED') return <span className="text-emerald-600 font-bold text-[10px]">✍ Fisik</span>;
-    if (s === 'DIGITAL') return <span className="text-blue-600 font-bold text-[10px]">📱 Digital</span>;
-    return <span className="text-slate-400 font-bold text-[10px]">✗ Belum</span>;
+  const signBadge = (s: PODRecord["signatureStatus"]) => {
+    if (s === "SIGNED")
+      return (
+        <span className="text-emerald-600 font-bold text-[10px]">✍ Fisik</span>
+      );
+    if (s === "DIGITAL")
+      return (
+        <span className="text-blue-600 font-bold text-[10px]">📱 Digital</span>
+      );
+    return (
+      <span className="text-slate-400 font-bold text-[10px]">✗ Belum</span>
+    );
   };
 
-  const filtered = dummyPODs.filter(p => {
+  const filtered = dummyPODs.filter((p) => {
+    // 1. Filter by search query
     const q = search.toLowerCase();
-    const match = p.podNo.toLowerCase().includes(q) || p.doRef.toLowerCase().includes(q) || p.driverName.toLowerCase().includes(q) || p.customerName.toLowerCase().includes(q);
-    return match && (filterStatus === 'ALL' || p.status === filterStatus);
+    const matchSearch =
+      p.podNo.toLowerCase().includes(q) ||
+      p.doRef.toLowerCase().includes(q) ||
+      p.driverName.toLowerCase().includes(q) ||
+      p.customerName.toLowerCase().includes(q);
+    if (!matchSearch) return false;
+
+    // 2. Filter by status
+    const matchStatus = filterStatus === "ALL" || p.status === filterStatus;
+    if (!matchStatus) return false;
+
+    let matchDate = true;
+    if (filterStartDate || filterEndDate) {
+      const podDate = dayjs(p.deliveryDate);
+      if (filterStartDate && podDate.isBefore(filterStartDate, "day")) {
+        matchDate = false;
+      }
+      if (filterEndDate && podDate.isAfter(filterEndDate, "day")) {
+        matchDate = false;
+      }
+    }
+
+    // If all filters pass, include the item
+    return matchDate && matchSearch && matchStatus;
   });
 
   const kpi = [
-    { label: 'Total POD', val: dummyPODs.length, color: 'text-slate-800' },
-    { label: 'Pending Upload', val: dummyPODs.filter(p => p.status === 'PENDING_UPLOAD').length, color: 'text-amber-600' },
-    { label: 'Terverifikasi', val: dummyPODs.filter(p => p.status === 'VERIFIED').length, color: 'text-emerald-600' },
-    { label: 'Sengketa / Reject', val: dummyPODs.filter(p => p.status === 'DISPUTED' || p.status === 'REJECTED').length, color: 'text-rose-600' },
+    { label: "Total POD", val: dummyPODs.length, color: "text-slate-800" },
+    {
+      label: "Pending Upload",
+      val: dummyPODs.filter((p) => p.status === "PENDING_UPLOAD").length,
+      color: "text-amber-600",
+    },
+    {
+      label: "Terverifikasi",
+      val: dummyPODs.filter((p) => p.status === "VERIFIED").length,
+      color: "text-emerald-600",
+    },
+    {
+      label: "Sengketa / Reject",
+      val: dummyPODs.filter(
+        (p) => p.status === "DISPUTED" || p.status === "REJECTED",
+      ).length,
+      color: "text-rose-600",
+    },
   ];
 
   return (
@@ -144,12 +392,25 @@ export const PODPage: React.FC = () => {
             <FileCheck2 size={20} className="text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Proof of Delivery (POD)</h2>
-            <p className="text-xs text-slate-500">Bukti serah terima pengiriman, tanda tangan, dan dokumentasi foto</p>
+            <h2 className="text-lg font-bold text-slate-900">
+              Proof of Delivery (POD)
+            </h2>
+            <p className="text-xs text-slate-500">
+              Bukti serah terima pengiriman, tanda tangan, dan dokumentasi foto
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Export laporan POD'})} className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors">
+          <button
+            onClick={() =>
+              Swal.fire({
+                icon: "success",
+                title: "Informasi",
+                text: "Export laporan POD",
+              })
+            }
+            className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors"
+          >
             <Download size={14} /> <span>Export</span>
           </button>
           {/*<button onClick={() => Swal.fire({icon: 'success', title: 'Informasi', text: 'Upload POD Baru'})} className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all">
@@ -171,10 +432,70 @@ export const PODPage: React.FC = () => {
       {/* Filter */}
       <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={16} className="text-slate-400 absolute left-3 top-2.5" />
-          <input type="text" placeholder="Cari No. POD, DO, Driver, Customer..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/20" />
+          <Search
+            size={16}
+            className="text-slate-400 absolute left-3 top-2.5"
+          />
+          <input
+            type="text"
+            placeholder="Cari No. POD, DO, Driver, Customer..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-9 pr-3 py-2 focus:outline-none"
+          />
         </div>
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none">
+        {/* Date Filters */}
+        <div className="relative w-full sm:w-auto">
+          <DatePicker
+            selected={filterStartDate}
+            onChange={(date: Date | null) => setFilterStartDate(date)}
+            placeholderText="Tanggal Mulai"
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
+
+        <span className="text-xs text-slate-500 px-1">s/d</span>
+
+        <div className="relative w-full sm:w-auto">
+          <DatePicker
+            selected={filterEndDate}
+            onChange={(date: Date | null) => setFilterEndDate(date)}
+            placeholderText="Tanggal Selesai"
+            className="w-full h-10 bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            dateFormat="dd/MM/yyyy"
+          />
+        </div>
+        {/* Button Reset*/}
+        <button
+          onClick={() => {
+            setSearch("");
+            setFilterStatus("ALL");
+            setFilterStartDate(null);
+            setFilterEndDate(null);
+          }}
+          className="
+                      h-[40px]
+                      w-[135px]
+                      bg-slate-50
+                      border border-slate-300
+                      text-xs
+                      font-medium
+                      text-slate-700
+                      rounded-lg
+                      px-3
+                      focus:outline-none
+                      focus:ring-2
+                      focus:ring-indigo-500/20
+                    "
+        >
+          Reset Tanggal
+        </button>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="bg-slate-50 h-10 border border-slate-300 text-xs font-semibold text-slate-700 rounded-lg px-3 py-2 focus:outline-none"
+        >
           <option value="ALL">Semua Status</option>
           <option value="PENDING_UPLOAD">Pending Upload</option>
           <option value="UPLOADED">Sudah Upload</option>
@@ -187,7 +508,9 @@ export const PODPage: React.FC = () => {
       {/* Table */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-slate-900 text-sm">Daftar Proof of Delivery</h3>
+          <h3 className="font-bold text-slate-900 text-sm">
+            Daftar Proof of Delivery
+          </h3>
           <span className="text-xs text-slate-500">{filtered.length} POD</span>
         </div>
         <div className="overflow-x-auto">
@@ -207,40 +530,66 @@ export const PODPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(p => (
-                <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="p-3.5">
-                    <div className="font-bold text-teal-600">{p.podNo}</div>
-                    <div className="text-[11px] text-slate-400 font-mono">{p.doRef}</div>
-                  </td>
-                  <td className="p-3.5 font-bold text-slate-800">{p.driverName}</td>
-                  <td className="p-3.5 font-semibold text-slate-700">{p.customerName}</td>
-                  <td className="p-3.5 text-slate-700">{p.deliveryDate}</td>
-                  <td className="p-3.5">
-                    {p.receivedBy !== '-' ? (
-                      <div>
-                        <div className="font-semibold text-slate-800">{p.receivedBy}</div>
-                        <div className="text-[10px] text-slate-400">{p.receiverTitle}</div>
+              {filtered
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage,
+                )
+                .map((p) => (
+                  <tr
+                    key={p.id}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
+                    <td className="p-3.5">
+                      <div className="font-bold text-teal-600">{p.podNo}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">
+                        {p.doRef}
                       </div>
-                    ) : <span className="text-slate-300">-</span>}
-                  </td>
-                  <td className="p-3.5">{signBadge(p.signatureStatus)}</td>
-                  <td className="p-3.5 text-center">
-                    {p.photoCount > 0 ? (
-                      <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
-                        <Camera size={12} className="text-slate-400" /> {p.photoCount}
-                      </div>
-                    ) : <span className="text-slate-300 text-[10px]">0</span>}
-                  </td>
-                  <td className="p-3.5">{conditionBadge(p.condition)}</td>
-                  <td className="p-3.5">{statusBadge(p.status)}</td>
-                  <td className="p-3.5 text-center">
-                    <button onClick={() => setSelectedPOD(p)} className="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 font-semibold text-[11px]">
-                      <Eye size={12} /> Detail
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="p-3.5 font-bold text-slate-800">
+                      {p.driverName}
+                    </td>
+                    <td className="p-3.5 font-semibold text-slate-700">
+                      {p.customerName}
+                    </td>
+                    <td className="p-3.5 text-slate-700">{p.deliveryDate}</td>
+                    <td className="p-3.5">
+                      {p.receivedBy !== "-" ? (
+                        <div>
+                          <div className="font-semibold text-slate-800">
+                            {p.receivedBy}
+                          </div>
+                          <div className="text-[10px] text-slate-400">
+                            {p.receiverTitle}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-slate-300">-</span>
+                      )}
+                    </td>
+                    <td className="p-3.5">{signBadge(p.signatureStatus)}</td>
+                    <td className="p-3.5 text-center">
+                      {p.photoCount > 0 ? (
+                        <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
+                          <Camera size={12} className="text-slate-400" />{" "}
+                          {p.photoCount}
+                        </div>
+                      ) : (
+                        <span className="text-slate-300 text-[10px]">0</span>
+                      )}
+                    </td>
+                    <td className="p-3.5">{conditionBadge(p.condition)}</td>
+                    <td className="p-3.5">{statusBadge(p.status)}</td>
+                    <td className="p-3.5 text-center">
+                      <button
+                        onClick={() => setSelectedPOD(p)}
+                        className="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 font-semibold text-[11px]"
+                      >
+                        <Eye size={12} /> Detail
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -254,36 +603,64 @@ export const PODPage: React.FC = () => {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <FileCheck2 size={18} className="text-teal-600" /> {selectedPOD.podNo}
+                  <FileCheck2 size={18} className="text-teal-600" />{" "}
+                  {selectedPOD.podNo}
                 </h3>
-                <div className="text-xs text-slate-500 mt-0.5">Referensi DO: <span className="font-bold text-slate-700">{selectedPOD.doRef}</span></div>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  Referensi DO:{" "}
+                  <span className="font-bold text-slate-700">
+                    {selectedPOD.doRef}
+                  </span>
+                </div>
               </div>
               <div>{statusBadge(selectedPOD.status)}</div>
             </div>
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-slate-400 font-semibold uppercase text-[10px]">Driver</div>
-                  <div className="font-bold text-slate-800 mt-0.5">{selectedPOD.driverName}</div>
+                  <div className="text-slate-400 font-semibold uppercase text-[10px]">
+                    Driver
+                  </div>
+                  <div className="font-bold text-slate-800 mt-0.5">
+                    {selectedPOD.driverName}
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-slate-400 font-semibold uppercase text-[10px]">Customer</div>
-                  <div className="font-bold text-slate-800 mt-0.5">{selectedPOD.customerName}</div>
+                  <div className="text-slate-400 font-semibold uppercase text-[10px]">
+                    Customer
+                  </div>
+                  <div className="font-bold text-slate-800 mt-0.5">
+                    {selectedPOD.customerName}
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-slate-400 font-semibold uppercase text-[10px]">Tgl. Terima</div>
-                  <div className="font-bold text-slate-800 mt-0.5">{selectedPOD.deliveryDate}</div>
+                  <div className="text-slate-400 font-semibold uppercase text-[10px]">
+                    Tgl. Terima
+                  </div>
+                  <div className="font-bold text-slate-800 mt-0.5">
+                    {selectedPOD.deliveryDate}
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-slate-400 font-semibold uppercase text-[10px]">Tgl. Upload</div>
-                  <div className="font-bold text-slate-800 mt-0.5">{selectedPOD.uploadDate}</div>
+                  <div className="text-slate-400 font-semibold uppercase text-[10px]">
+                    Tgl. Upload
+                  </div>
+                  <div className="font-bold text-slate-800 mt-0.5">
+                    {selectedPOD.uploadDate}
+                  </div>
                 </div>
               </div>
-              {selectedPOD.receivedBy !== '-' && (
+              {selectedPOD.receivedBy !== "-" && (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-                  <div className="text-emerald-600 font-bold text-[10px] uppercase mb-1">Penerima Barang</div>
-                  <div className="font-bold text-slate-900">{selectedPOD.receivedBy}</div>
-                  <div className="text-slate-500">{selectedPOD.receiverTitle}</div>
+                  <div className="text-emerald-600 font-bold text-[10px] uppercase mb-1">
+                    Penerima Barang
+                  </div>
+                  <div className="font-bold text-slate-900">
+                    {selectedPOD.receivedBy}
+                  </div>
+                  <div className="text-slate-500">
+                    {selectedPOD.receiverTitle}
+                  </div>
                   <div className="mt-1 flex items-center gap-2">
                     {signBadge(selectedPOD.signatureStatus)}
                     <span className="text-slate-400">·</span>
@@ -292,18 +669,27 @@ export const PODPage: React.FC = () => {
                 </div>
               )}
               <div className="bg-slate-50 rounded-lg p-3">
-                <div className="text-slate-400 font-semibold uppercase text-[10px] mb-1">Catatan</div>
+                <div className="text-slate-400 font-semibold uppercase text-[10px] mb-1">
+                  Catatan
+                </div>
                 <div className="text-slate-700">{selectedPOD.note}</div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Camera size={14} className="text-slate-400" />
-                  <span className="font-bold text-slate-700">{selectedPOD.photoCount} foto terlampir</span>
+                  <span className="font-bold text-slate-700">
+                    {selectedPOD.photoCount} foto terlampir
+                  </span>
                 </div>
                 {selectedPOD.photoCount > 0 && (
                   <div className="flex gap-1">
-                    {Array.from({ length: Math.min(selectedPOD.photoCount, 4) }).map((_, i) => (
-                      <div key={i} className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400">
+                    {Array.from({
+                      length: Math.min(selectedPOD.photoCount, 4),
+                    }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400"
+                      >
                         <Star size={12} />
                       </div>
                     ))}
@@ -312,10 +698,27 @@ export const PODPage: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 mt-4">
-              {selectedPOD.status === 'UPLOADED' && (
-                <button onClick={() => { Swal.fire({icon: 'success', title: 'Informasi', text: `POD ${selectedPOD.podNo} berhasil diverifikasi`}); setSelectedPOD(null); }} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs">Verifikasi POD</button>
+              {selectedPOD.status === "UPLOADED" && (
+                <button
+                  onClick={() => {
+                    Swal.fire({
+                      icon: "success",
+                      title: "Informasi",
+                      text: `POD ${selectedPOD.podNo} berhasil diverifikasi`,
+                    });
+                    setSelectedPOD(null);
+                  }}
+                  className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 text-xs"
+                >
+                  Verifikasi POD
+                </button>
               )}
-              <button onClick={() => setSelectedPOD(null)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs">Tutup</button>
+              <button
+                onClick={() => setSelectedPOD(null)}
+                className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 text-xs"
+              >
+                Tutup
+              </button>
             </div>
           </div>
         </div>

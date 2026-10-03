@@ -1,8 +1,13 @@
 // Shared TMS Types & Interfaces
 
-export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus = "PENDING" | "IN_PROGRESS" | "DELIVERED" | "CANCELLED";
 
-export type UnitStatus = 'READY' | 'OPERATIONAL' | 'MAINTENANCE' | 'BROKEN' | 'INACTIVE';
+export type UnitStatus =
+  | "READY"
+  | "OPERATIONAL"
+  | "MAINTENANCE"
+  | "BROKEN"
+  | "INACTIVE";
 
 export interface KPIMetric {
   id: string;
@@ -10,8 +15,8 @@ export interface KPIMetric {
   value: string | number;
   subtext: string;
   trend: number;
-  trendDirection: 'up' | 'down';
-  color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'teal';
+  trendDirection: "up" | "down";
+  color: "blue" | "green" | "purple" | "orange" | "red" | "teal";
   icon: string;
 }
 
@@ -71,8 +76,8 @@ export interface DamagedUnit {
   vehicleType: string;
   problem: string;
   date: string;
-  severity: 'HIGH' | 'MEDIUM' | 'LOW';
-  status: 'PENDING' | 'REPAIRING' | 'DONE';
+  severity: "HIGH" | "MEDIUM" | "LOW";
+  status: "PENDING" | "REPAIRING" | "DONE";
   technician?: string;
 }
 
@@ -99,12 +104,13 @@ export interface TransportOrder {
   id: string;
   orderNumber: string;
   customerName: string;
+  customerRef: string;
   origin: string;
   destination: string;
   status: OrderStatus;
-  driverName: string;
-  vehiclePlate: string;
-  date: string;
+  requestDate: string;
+  vehicleType: string;
+  paymentTerm: string;
   revenue: number;
 }
 
@@ -128,7 +134,7 @@ export interface DriverProfile {
   phone: string;
   licenseNumber: string;
   licenseType: string;
-  status: 'AVAILABLE' | 'ON_DUTY' | 'OFF';
+  status: "AVAILABLE" | "ON_DUTY" | "OFF";
   performanceRating: number;
   totalTrips: number;
   avatarUrl: string;
